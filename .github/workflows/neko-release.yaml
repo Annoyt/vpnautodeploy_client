@@ -125,10 +125,11 @@ jobs:
             pkg="$("$bt/aapt2" dump packagename "$apk")"
             [ "$pkg" = "$PACKAGE" ] || { echo "$apk: package $pkg" >&2; exit 1; }
             "$bt/aapt2" dump badging "$apk" | grep -E '^(package|application-label):'
-            # v3 signatures name the signer by SDK range, not "#1".
+            # The label before "certificate" varies by apksigner version
+            # ("Signer #1", "V2 Signer:"); the digest line does not.
             certs="$("$bt/apksigner" verify --print-certs "$apk")"
             echo "$certs" | grep -E 'certificate (DN|SHA-256 digest):'
-            cert="$(echo "$certs" | sed -n 's/^Signer.* certificate SHA-256 digest: //p' | sort -u)"
+            cert="$(echo "$certs" | sed -n 's/.*certificate SHA-256 digest: //p' | sort -u)"
             [ "$cert" = "$CERT_SHA256" ] || { echo "$apk: signed by $cert" >&2; exit 1; }
             if unzip -l "$apk" | grep -i -E 'firebase|crashlytics'; then
               echo "$apk carries Firebase" >&2
