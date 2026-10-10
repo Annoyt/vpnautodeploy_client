@@ -1,25 +1,34 @@
-# vpnautodeploy_client
+# NekoVPN — клиент (vpnautodeploy_client)
 
-Клиент NekoVPN: планируемый форк [FlClash](https://github.com/chen08209/FlClash)
-(ядро [mihomo](https://github.com/MetaCubeX/mihomo)) с удалёнными настройками,
-кнопкой SOS и режимом шлюза для соседей.
+Клиент сервиса NekoVPN для Android, Windows, macOS и Linux. Это **изменённая
+версия [FlClash](https://github.com/chen08209/FlClash)** (GPL-3.0) с ядром
+[mihomo](https://github.com/MetaCubeX/mihomo) (MIT). FlClash — проект его
+авторов; NekoVPN — независимый форк, не связанный с ними.
 
-*NekoVPN client — a planned fork of FlClash (mihomo core) with signed remote
-settings, an SOS button and a LAN gateway mode. Plan first; code when the
-field test says so.*
+*NekoVPN client — a modified version of FlClash (GPL-3.0). Not affiliated with
+the FlClash authors.*
 
-**Статус (2026-10-08): планирование.** Кода здесь пока нет. Форк появится,
-только если полевой тест обычного FlClash из российских сетей покажет, что без
-правок ядра не обойтись, или понадобятся резервные адреса и телеметрия с кнопки
-(см. [docs/PLAN.md](docs/PLAN.md), раздел «Критерий запуска»).
+**Статус (2026-10-10): тестовые сборки.** Владелец сервиса решил начать форк до
+полевого теста обычного FlClash: тестеры первой сборки и есть полевой тест
+(раздел 8 [docs/PLAN.md](docs/PLAN.md)).
 
-- Серверная часть (бот, подписка, каскад): [Annoyt/VPNautodeploy](https://github.com/Annoyt/VPNautodeploy),
-  раздел E плана `docs/IMPROVEMENT_PLAN.md`.
-- Апстрим: [chen08209/FlClash](https://github.com/chen08209/FlClash) (GPL-3.0),
-  ядро — форк mihomo (MIT).
-- Лицензия этого репозитория: **GPL-3.0** — как у апстрима. Исходники всех
-  выпущенных сборок будут здесь, с пометкой об изменениях.
+## Чем отличается от FlClash
 
-Почему отдельный клиент, что берём от FlClash как есть, контракт с сервером,
-объём форка, сборка и раздача, лицензионные обязательства, задачи и оценки —
-в [docs/PLAN.md](docs/PLAN.md).
+Подробно, с датами, — в [CHANGELOG-NEKO.md](CHANGELOG-NEKO.md).
+
+- Своё имя (NekoVPN), иконка и идентификатор пакета: ставится рядом с FlClash,
+  поверх него не обновляется.
+- Без Firebase: ни Crashlytics, ни Analytics, никаких отчётов третьим сторонам.
+- Обновления проверяются в этом репозитории, а не у апстрима.
+- Ссылки `nekovpn://install-config?url=…` для импорта подписки.
+
+## Исходники и лицензия
+
+- Лицензия — **GPL-3.0**, как у апстрима ([LICENSE](LICENSE)). Исходники каждой
+  выпущенной сборки — тег в этом репозитории.
+- История апстрима сохранена; его README — [README.upstream.md](README.upstream.md),
+  сборка устроена так же (`dart setup.dart <платформа>`).
+- Наш релизный конвейер — `.github/workflows/neko-release.yaml`; проверки
+  апстрима (`build.yaml`) работают как есть.
+- План клиента, контракт с сервером и задачи — [docs/PLAN.md](docs/PLAN.md).
+  Серверная часть: [Annoyt/VPNautodeploy](https://github.com/Annoyt/VPNautodeploy).
