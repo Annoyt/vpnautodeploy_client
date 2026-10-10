@@ -24,6 +24,8 @@ env:
   GO_VERSION: '1.26.4'
   NDK_VERSION: r28c
   PACKAGE: com.nekovpn.client
+  # Not a secret: as one, GitHub would mask the word in every log line.
+  KEY_ALIAS: nekovpn
   # SHA-256 of the release certificate: an APK signed by anything else
   # (a debug key when the secrets are missing) fails the build.
   CERT_SHA256: d1acb8bff015e22d3c02403d3309ebfe4b84258965df316269ebfddad3aeab85
@@ -50,7 +52,6 @@ jobs:
       - name: Setup signing
         env:
           KEYSTORE: ${{ secrets.NEKO_KEYSTORE }}
-          KEY_ALIAS: ${{ secrets.NEKO_KEY_ALIAS }}
           STORE_PASSWORD: ${{ secrets.NEKO_STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.NEKO_KEY_PASSWORD }}
         run: |
@@ -124,8 +125,10 @@ jobs:
             pkg="$("$bt/aapt2" dump packagename "$apk")"
             [ "$pkg" = "$PACKAGE" ] || { echo "$apk: package $pkg" >&2; exit 1; }
             "$bt/aapt2" dump badging "$apk" | grep -E '^(package|application-label):'
-            cert="$("$bt/apksigner" verify --print-certs "$apk" \
-              | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')"
+            # v3 signatures name the signer by SDK range, not "#1".
+            certs="$("$bt/apksigner" verify --print-certs "$apk")"
+            echo "$certs" | grep -E 'certificate (DN|SHA-256 digest):'
+            cert="$(echo "$certs" | sed -n 's/^Signer.* certificate SHA-256 digest: //p' | sort -u)"
             [ "$cert" = "$CERT_SHA256" ] || { echo "$apk: signed by $cert" >&2; exit 1; }
             if unzip -l "$apk" | grep -i -E 'firebase|crashlytics'; then
               echo "$apk carries Firebase" >&2
