@@ -82,8 +82,8 @@ void main() {
       'viewportHeight',
     );
 
-    // Conservative bounds of the current logo, including the curved caps.
-    const logoBounds = ui.Rect.fromLTRB(54, 33, 179, 206.5);
+    // Bounds of the NekoVPN cat (ears to chin), see tool/neko/icons.py.
+    const logoBounds = ui.Rect.fromLTRB(64, 62, 176, 178);
     final transformedBounds = ui.Rect.fromLTRB(
       (logoBounds.left * scaleX + translateX) / viewportWidth * 108,
       (logoBounds.top * scaleY + translateY) / viewportHeight * 108,

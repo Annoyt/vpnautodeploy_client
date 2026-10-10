@@ -73,7 +73,7 @@ void main() {
     () async {
       linkManager.seedInitialLink([
         '--verbose',
-        'flclash://install-config?url=https://example.com/a.yaml',
+        'nekovpn://install-config?url=https://example.com/a.yaml',
       ]);
 
       expect(received, isEmpty);
@@ -146,7 +146,7 @@ void main() {
       expect(
         profileUrlFromQrCodes([
           'plain text',
-          'flclash://install-config?url=https://example.com/first.yaml',
+          'nekovpn://install-config?url=https://example.com/first.yaml',
           'https://example.com/second.yaml',
         ]),
         'https://example.com/first.yaml',

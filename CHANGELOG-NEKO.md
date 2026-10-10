@@ -42,5 +42,6 @@
 `lib/common/request.dart`, `lib/bootstrap.dart`, `lib/views/about.dart`,
 `lib/views/disclaimer.dart`, `lib/views/config/general.dart`,
 `test/common/protocol_test.dart`, `test/common/link_test.dart`,
+`test/state_run_globals_test.dart`, `test/android_tv_launcher_icon_test.dart`,
 `pubspec.yaml`, `distribute_options.yaml`, `README.md` (README апстрима —
 `README.upstream.md`).

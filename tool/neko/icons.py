@@ -20,21 +20,28 @@ def poly_path(pts):
     return 'M' + ' L'.join(f'{x},{y}' for x, y in pts) + ' z'
 
 def vector_xml(tv=False):
+    # The TV foreground keeps upstream's <group> transform, which
+    # test/android_tv_launcher_icon_test.dart reads; identity here.
     face = ' '.join([ell_path(*HEAD)] + [ell_path(*e) for e in EYES] + [poly_path(NOSE)])
     ears = ' '.join(poly_path(e) for e in EARS)
+    paths = (f'    <path\n        android:fillColor="{ORANGE}"\n'
+             f'        android:pathData="{ears}" />\n'
+             f'    <path\n        android:fillColor="{ORANGE}"\n'
+             f'        android:fillType="evenOdd"\n'
+             f'        android:pathData="{face}" />\n')
+    if tv:
+        indented = ''.join('    ' + line + '\n' for line in paths.splitlines())
+        body = ('    <group\n        android:scaleX="1"\n        android:scaleY="1"\n'
+                '        android:translateX="0"\n        android:translateY="0">\n'
+                f'{indented}    </group>\n')
+    else:
+        body = paths
     return f'''<vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="240"
     android:viewportHeight="240">
-    <path
-        android:fillColor="{ORANGE}"
-        android:pathData="{ears}" />
-    <path
-        android:fillColor="{ORANGE}"
-        android:fillType="evenOdd"
-        android:pathData="{face}" />
-</vector>
+{body}</vector>
 '''
 
 def draw_cat(size, scale=1.0, offset=(0, 0), ss=4):
