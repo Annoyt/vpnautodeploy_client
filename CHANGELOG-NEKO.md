@@ -38,6 +38,10 @@
 `android/common/src/main/res/values/strings.xml`,
 `android/app/src/main/AndroidManifest.xml`,
 `android/app/src/debug/AndroidManifest.xml`, иконки в `android/app/src/main/res`,
+`android/service/src/main/res/drawable/ic_service.xml` и `ic.xml` (значок в строке
+состояния и плитка), заголовок уведомления и имя профиля по умолчанию
+(`NotificationModule.kt`, `NotificationParams.kt`, `State.kt`, их тесты
+`SharedStateTest.kt` и `ServiceConfigTest.kt`),
 `assets/images/icon.png`, `lib/common/constant.dart`, `lib/common/protocol.dart`,
 `lib/common/request.dart`, `lib/bootstrap.dart`, `lib/views/about.dart`,
 `lib/views/disclaimer.dart`, `lib/views/config/general.dart`,

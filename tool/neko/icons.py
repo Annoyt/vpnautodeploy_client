@@ -19,6 +19,31 @@ def ell_path(cx, cy, rx, ry):
 def poly_path(pts):
     return 'M' + ' L'.join(f'{x},{y}' for x, y in pts) + ' z'
 
+def status_xml(fill):
+    """Status bar and Quick Settings tile icon: the bare silhouette."""
+    face = ' '.join([ell_path(*HEAD)] + [ell_path(*e) for e in EYES] + [poly_path(NOSE)])
+    ears = ' '.join(poly_path(e) for e in EARS)
+    return f'''<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="240"
+    android:viewportHeight="240">
+    <group
+        android:pivotX="120"
+        android:pivotY="120"
+        android:scaleX="1.6"
+        android:scaleY="1.6">
+        <path
+            android:fillColor="{fill}"
+            android:pathData="{ears}" />
+        <path
+            android:fillColor="{fill}"
+            android:fillType="evenOdd"
+            android:pathData="{face}" />
+    </group>
+</vector>
+'''
+
 def vector_xml(tv=False):
     # The TV foreground keeps upstream's <group> transform, which
     # test/android_tv_launcher_icon_test.dart reads; identity here.
@@ -96,9 +121,12 @@ def banner(w=320, h=180):
     return im
 
 if __name__ == '__main__':
-    # python3 tool/neko/icons.py android/app/src/main/res assets/images/icon.png
+    # Run from the repository root: python3 tool/neko/icons.py
     import sys
-    res = sys.argv[1]
+    res = 'android/app/src/main/res'
+    service = 'android/service/src/main/res/drawable'
+    open(f'{service}/ic_service.xml', 'w').write(status_xml(ORANGE))
+    open(f'{service}/ic.xml', 'w').write(status_xml('#FFFFFF'))
     open(f'{res}/drawable/ic_launcher_foreground.xml', 'w').write(vector_xml())
     open(f'{res}/drawable/ic_launcher_foreground_tv.xml', 'w').write(vector_xml(tv=True))
     for dpi, px in (('mdpi', 48), ('hdpi', 72), ('xhdpi', 96), ('xxhdpi', 144), ('xxxhdpi', 192)):
@@ -107,5 +135,5 @@ if __name__ == '__main__':
     for dpi, px in (('mdpi', 80), ('hdpi', 120), ('xhdpi', 160), ('xxhdpi', 240), ('xxxhdpi', 320)):
         tv(px).save(f'{res}/mipmap-television-{dpi}/ic_launcher.webp', 'WEBP', lossless=True)
     banner().save(f'{res}/mipmap-xhdpi/ic_banner.png')
-    draw_cat(550, scale=1.3).save(sys.argv[2])
+    draw_cat(550, scale=1.3).save('assets/images/icon.png')
     print('generated')
