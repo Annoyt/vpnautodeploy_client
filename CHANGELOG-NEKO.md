@@ -43,5 +43,6 @@
 `lib/views/disclaimer.dart`, `lib/views/config/general.dart`,
 `test/common/protocol_test.dart`, `test/common/link_test.dart`,
 `test/state_run_globals_test.dart`, `test/android_tv_launcher_icon_test.dart`,
+`tool/check_coverage.dart` (порог 95% для `lib/neko`),
 `pubspec.yaml`, `distribute_options.yaml`, `README.md` (README апстрима —
 `README.upstream.md`).

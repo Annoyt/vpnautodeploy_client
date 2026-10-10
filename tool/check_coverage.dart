@@ -32,6 +32,7 @@ const _groupFloors = <String, double>{
   'pages': 71.0,
   'plugins': 67.0,
   'lib': 20.0,
+  'neko': 95.0,
 };
 
 class _Coverage {
