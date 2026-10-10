@@ -24,10 +24,12 @@ void main() {
     expect(en, contains(nekoModifiedOn));
   });
 
-  test('the privacy text says Firebase is removed', () {
+  test('the privacy text: Firebase removed, ML Kit named', () {
     final ru = Intl.withLocale('ru', () => nekoPrivacyContent);
     final en = Intl.withLocale('en', () => nekoPrivacyContent);
-    expect(ru, contains('удалён'));
-    expect(en, contains('removed'));
+    expect(ru, contains('здесь удалены'));
+    expect(en, contains('are removed'));
+    expect(ru, contains('Google ML Kit'));
+    expect(en, contains('Google ML Kit'));
   });
 }

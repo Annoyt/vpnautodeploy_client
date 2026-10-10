@@ -47,9 +47,10 @@ const _privacyRu =
     'Программа обращается к сети только при использовании соответствующих '
     'функций: загружает указанный вами адрес подписки при обновлении профиля '
     'и обращается к GitHub при проверке обновлений.\n\n'
-    'NekoVPN не содержит сервисов статистики и отчётов о сбоях ни на одной '
-    'платформе: Firebase, который есть в Android-версии FlClash, из этой '
-    'сборки удалён.';
+    'NekoVPN не содержит сервисов статистики и отчётов о сбоях: Firebase '
+    'Crashlytics и Analytics из Android-версии FlClash здесь удалены. Сканер '
+    'QR-кодов в Android-версии работает на Google ML Kit; по условиям Google '
+    'он может отправлять Google обезличенные метрики работы сканера.';
 
 const _privacyEn =
     'The Software does not collect or upload your subscription URLs, node '
@@ -58,6 +59,7 @@ const _privacyEn =
     'The Software only reaches the network when you use a feature that needs '
     'it: fetching the subscription URL you provided when updating a profile, '
     'and contacting GitHub when checking for updates.\n\n'
-    'NekoVPN includes no analytics or crash reporting service on any '
-    'platform: the Google Firebase services of the FlClash Android build are '
-    'removed from this one.';
+    'NekoVPN includes no analytics or crash reporting service: the Firebase '
+    'Crashlytics and Analytics of the FlClash Android build are removed. The '
+    'Android QR code scanner runs on Google ML Kit, which by the terms of '
+    'Google may send Google anonymous metrics about the scanner.';
