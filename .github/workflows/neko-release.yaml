@@ -131,10 +131,14 @@ jobs:
             echo "$certs" | grep -E 'certificate (DN|SHA-256 digest):'
             cert="$(echo "$certs" | sed -n 's/.*certificate SHA-256 digest: //p' | sort -u)"
             [ "$cert" = "$CERT_SHA256" ] || { echo "$apk: signed by $cert" >&2; exit 1; }
-            if unzip -l "$apk" | grep -i -E 'firebase|crashlytics'; then
-              echo "$apk carries Firebase" >&2
+            # What the fork removed must stay out. firebase-components and
+            # -encoders remain on purpose: Google ML Kit (mobile_scanner, the
+            # QR scanner) runs on them; they are listed, not failed.
+            if unzip -l "$apk" | grep -i -E 'crashlytics|firebase-analytics|measurement'; then
+              echo "$apk carries Firebase Crashlytics or Analytics" >&2
               exit 1
             fi
+            unzip -l "$apk" | grep -i -E 'firebase|mlkit|datatransport' || true
           done
           (cd release && sha256sum -- * > SHA256SUMS && cat SHA256SUMS)
 
