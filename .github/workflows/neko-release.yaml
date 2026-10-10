@@ -1,0 +1,163 @@
+name: neko-release
+
+# NekoVPN release builds (docs/PLAN.md, section 5). Upstream's build.yaml keeps
+# running its checks here but publishes only from chen08209/FlClash; this one
+# builds our signed Android APKs. A v*-neko.* tag puts them into a DRAFT
+# release, so nothing is public until the owner publishes it; a run by hand
+# only leaves them as a run artifact.
+
+on:
+  push:
+    tags:
+      - 'v*-neko.*'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: '3.47.4'
+  GO_VERSION: '1.26.4'
+  NDK_VERSION: r28c
+  PACKAGE: com.nekovpn.client
+  # SHA-256 of the release certificate: an APK signed by anything else
+  # (a debug key when the secrets are missing) fails the build.
+  CERT_SHA256: d1acb8bff015e22d3c02403d3309ebfe4b84258965df316269ebfddad3aeab85
+
+jobs:
+  android:
+    name: Android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Tag matches pubspec
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          version="$(sed -n 's/^version: *\([^+]*\).*/\1/p' pubspec.yaml)"
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "tag $GITHUB_REF_NAME, pubspec.yaml says v$version" >&2
+            exit 1
+          fi
+
+      - name: Setup signing
+        env:
+          KEYSTORE: ${{ secrets.NEKO_KEYSTORE }}
+          KEY_ALIAS: ${{ secrets.NEKO_KEY_ALIAS }}
+          STORE_PASSWORD: ${{ secrets.NEKO_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.NEKO_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE" ]; then
+            echo 'NEKO_KEYSTORE is not set; the build would be a debug-signed .dev app' >&2
+            exit 1
+          fi
+          echo "$KEYSTORE" | base64 --decode > android/app/keystore.jks
+          {
+            echo "keyAlias=$KEY_ALIAS"
+            echo "storePassword=$STORE_PASSWORD"
+            echo "keyPassword=$KEY_PASSWORD"
+          } >> android/local.properties
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: core/go.sum
+
+      - name: Setup Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: neko-android
+          workspaces: plugins/rust_api/rust
+          cache-directories: .dart_tool/hooks_runner
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        id: ndk
+        with:
+          ndk-version: ${{ env.NDK_VERSION }}
+          add-to-path: true
+          link-to-sdk: true
+
+      - name: Install dependencies
+        run: |
+          flutter --version
+          flutter pub get
+
+      - name: Build
+        env:
+          ANDROID_NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
+        run: dart setup.dart android -v
+
+      - name: Collect and check the APKs
+        run: |
+          mkdir -p release
+          find dist -type f -name '*.apk' -exec cp {} release/ \;
+          ls -la release
+          count="$(find release -name '*.apk' | wc -l)"
+          [ "$count" -eq 3 ] || { echo "expected 3 APKs (one per ABI), got $count" >&2; exit 1; }
+          bt="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n 1)"
+          for apk in release/*.apk; do
+            pkg="$("$bt/aapt2" dump packagename "$apk")"
+            [ "$pkg" = "$PACKAGE" ] || { echo "$apk: package $pkg" >&2; exit 1; }
+            "$bt/aapt2" dump badging "$apk" | grep -E '^(package|application-label):'
+            cert="$("$bt/apksigner" verify --print-certs "$apk" \
+              | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')"
+            [ "$cert" = "$CERT_SHA256" ] || { echo "$apk: signed by $cert" >&2; exit 1; }
+            if unzip -l "$apk" | grep -i -E 'firebase|crashlytics'; then
+              echo "$apk carries Firebase" >&2
+              exit 1
+            fi
+          done
+          (cd release && sha256sum -- * > SHA256SUMS && cat SHA256SUMS)
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nekovpn-android
+          path: release/
+          retention-days: 30
+
+      - name: Draft release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          prerelease: true
+          name: NekoVPN ${{ github.ref_name }} (тестовая сборка)
+          files: release/*
+          body: |
+            Тестовая сборка NekoVPN для Android — изменённой версии FlClash.
+            Что изменено: [CHANGELOG-NEKO.md](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/CHANGELOG-NEKO.md).
+
+            Какой файл ставить:
+            - `arm64-v8a` — почти все телефоны последних лет;
+            - `armeabi-v7a` — старые 32-битные телефоны;
+            - `x86_64` — эмуляторы и редкие планшеты.
+
+            Ставится рядом с FlClash и Hiddify, не заменяя их. Контрольные
+            суммы — в `SHA256SUMS`; сертификат подписи SHA-256:
+            `${{ env.CERT_SHA256 }}`.

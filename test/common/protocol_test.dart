@@ -27,27 +27,27 @@ void main() {
     test('writes a hidden desktop entry claiming every scheme', () {
       expect(
         plan.desktopPath,
-        '/home/me/.local/share/applications/flclash-url-handler.desktop',
+        '/home/me/.local/share/applications/nekovpn-url-handler.desktop',
       );
       expect(
         plan.desktopEntry,
         '[Desktop Entry]\n'
         'Type=Application\n'
-        'Name=FlClash\n'
+        'Name=NekoVPN\n'
         'NoDisplay=true\n'
         'Exec="/home/me/Apps/FlClash.AppImage" %u\n'
         'MimeType=x-scheme-handler/clash;x-scheme-handler/clashmeta;'
-        'x-scheme-handler/flclash;\n',
+        'x-scheme-handler/nekovpn;\n',
       );
     });
 
     test('makes the entry the default handler for every scheme', () {
       expect(plan.xdgMimeArguments, [
         'default',
-        'flclash-url-handler.desktop',
+        'nekovpn-url-handler.desktop',
         'x-scheme-handler/clash',
         'x-scheme-handler/clashmeta',
-        'x-scheme-handler/flclash',
+        'x-scheme-handler/nekovpn',
       ]);
     });
 

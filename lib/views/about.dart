@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/icons/icons.dart';
+import 'package:fl_clash/neko/brand.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/widgets/list.dart';
@@ -10,21 +11,8 @@ import 'package:fl_clash/widgets/scaffold.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-@immutable
-class Contributor {
-  final String avatar;
-  final String name;
-
-  const Contributor({required this.avatar, required this.name});
-}
-
 class AboutView extends ConsumerWidget {
   const AboutView({super.key});
-
-  static const _contributors = [
-    Contributor(avatar: 'assets/images/avatar/june2.jpg', name: 'June2'),
-    Contributor(avatar: 'assets/images/avatar/arue.jpg', name: 'Arue'),
-  ];
 
   Future<void> _checkUpdate(BuildContext context, WidgetRef ref) async {
     if (ref.read(loadingProvider(LoadingTag.checkUpdate))) return;
@@ -92,6 +80,12 @@ class AboutView extends ConsumerWidget {
                 label: 'github.com/$repository',
               ),
               _buildLinkItem(
+                glyph: AppGlyphs.split,
+                title: nekoBasedOnTitle,
+                url: 'https://github.com/$nekoUpstreamRepository',
+                label: 'github.com/$nekoUpstreamRepository',
+              ),
+              _buildLinkItem(
                 glyph: AppGlyphs.cpu,
                 title: appLocalizations.core,
                 url: 'https://github.com/chen08209/Clash.Meta/tree/FlClash',
@@ -100,22 +94,9 @@ class AboutView extends ConsumerWidget {
               _buildLinkItem(
                 glyph: AppGlyphs.send,
                 title: 'Telegram',
-                url: 'https://t.me/FlClash',
-                label: 't.me/FlClash',
+                url: nekoBotUrl,
+                label: 't.me/neko_vpnbot',
               ),
-            ],
-          ),
-          generateSectionV3(
-            title: appLocalizations.otherContributors,
-            items: [
-              for (final contributor in _contributors)
-                ListItem(
-                  leading: CircleAvatar(
-                    foregroundImage: AssetImage(contributor.avatar),
-                  ),
-                  title: Text(contributor.name),
-                  subtitle: Text(appLocalizations.appIconDesign),
-                ),
             ],
           ),
         ],
@@ -193,7 +174,7 @@ class _AboutHero extends StatelessWidget {
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 420),
             child: Text(
-              appLocalizations.desc,
+              nekoDescription,
               textAlign: TextAlign.center,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,

@@ -116,7 +116,7 @@ void main() {
     });
 
     test('unwraps the url of an install-config link for every scheme', () {
-      for (final scheme in ['clash', 'clashmeta', 'flclash']) {
+      for (final scheme in ['clash', 'clashmeta', 'nekovpn']) {
         expect(
           profileUrlFromQrCodes([
             '$scheme://install-config?url=https%3A%2F%2Fexample.com%2Fa.yaml',

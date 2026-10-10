@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/neko/version.dart';
 import 'package:fl_clash/state.dart';
 
 class Request {
@@ -79,7 +80,7 @@ class Request {
       final remoteVersion = data['tag_name'];
       final version = globalState.packageInfo.version;
       final hasUpdate =
-          compareVersions(remoteVersion.replaceAll('v', ''), version) > 0;
+          compareNekoVersions(remoteVersion.replaceAll('v', ''), version) > 0;
       if (!hasUpdate) return null;
       return data;
     } catch (e) {
