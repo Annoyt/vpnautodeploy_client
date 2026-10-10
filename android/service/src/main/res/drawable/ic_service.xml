@@ -1,17 +1,19 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:width="240dp"
-    android:height="240dp"
+    android:width="24dp"
+    android:height="24dp"
     android:viewportWidth="240"
-    android:viewportHeight="240"
-    tools:ignore="VectorRaster">
-  <path
-      android:pathData="M48.1,80.89L168.44,11.41A23.16,23.16 0,0 1,191.6,51.53L71.26,121.01A23.16,23.16 0,0 1,48.1,80.89Z"
-      android:fillColor="#6666FB"/>
-  <path
-      android:pathData="M78.98,134.37L139.16,99.63A23.16,23.16 0,0 1,162.32,139.75L102.14,174.49A23.16,23.16 0,0 1,78.98,134.37Z"
-      android:fillColor="#336AB6"/>
-  <path
-      android:pathData="M98.28,207.92A23.16,23.16 0,1 1,144.6,207.92A23.16,23.16 0,1 1,98.28,207.92Z"
-      android:fillColor="#5CA8E9"/>
+    android:viewportHeight="240">
+    <group
+        android:pivotX="120"
+        android:pivotY="120"
+        android:scaleX="1.6"
+        android:scaleY="1.6">
+        <path
+            android:fillColor="#F57C1F"
+            android:pathData="M70,118 L80,62 L110,92 z M170,118 L160,62 L130,92 z" />
+        <path
+            android:fillColor="#F57C1F"
+            android:fillType="evenOdd"
+            android:pathData="M64,132 a56,46 0 1,0 112,0 a56,46 0 1,0 -112,0 z M93,134 a7,10 0 1,0 14,0 a7,10 0 1,0 -14,0 z M133,134 a7,10 0 1,0 14,0 a7,10 0 1,0 -14,0 z M113,149 L127,149 L120,157 z" />
+    </group>
 </vector>
