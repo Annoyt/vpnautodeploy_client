@@ -159,7 +159,7 @@ jobs:
           {
             echo 'Тестовая сборка NekoVPN для Android, изменённой версии FlClash.'
             echo
-            echo 'Что изменилось:'
+            echo 'Что нового:'
             echo
             dart run tool/neko/release_notes.dart "$version"
             echo
