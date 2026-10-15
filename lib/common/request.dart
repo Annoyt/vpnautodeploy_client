@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/neko/version.dart';
+import 'package:fl_clash/neko/update.dart';
 import 'package:fl_clash/state.dart';
 
 class Request {
@@ -72,17 +72,18 @@ class Request {
   Future<Map<String, dynamic>?> checkForUpdate() async {
     try {
       final response = await dio.get(
-        'https://api.github.com/repos/$repository/releases/latest',
+        'https://api.github.com/repos/$repository/releases',
+        queryParameters: {'per_page': 30},
         options: Options(responseType: ResponseType.json),
       );
       if (response.statusCode != 200) return null;
-      final data = response.data as Map<String, dynamic>;
-      final remoteVersion = data['tag_name'];
-      final version = globalState.packageInfo.version;
-      final hasUpdate =
-          compareNekoVersions(remoteVersion.replaceAll('v', ''), version) > 0;
-      if (!hasUpdate) return null;
-      return data;
+      final data = response.data;
+      if (data is! List) return null;
+      return pickNekoUpdate(
+        data,
+        installed: globalState.packageInfo.version,
+        includePrerelease: globalState.isPre,
+      );
     } catch (e) {
       commonPrint.log('checkForUpdate failed', logLevel: LogLevel.warning);
       return null;

@@ -149,6 +149,30 @@ jobs:
           path: release/
           retention-days: 30
 
+      # The update dialog lists the items between the changelog markers, so
+      # the notes come from CHANGELOG-NEKO.md; no section for the version,
+      # no release.
+      - name: Release notes
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          {
+            echo 'Тестовая сборка NekoVPN для Android, изменённой версии FlClash.'
+            echo
+            echo 'Что изменилось:'
+            echo
+            dart run tool/neko/release_notes.dart "$version"
+            echo
+            echo "Все изменения форка: [CHANGELOG-NEKO.md](https://github.com/$GITHUB_REPOSITORY/blob/$GITHUB_REF_NAME/CHANGELOG-NEKO.md)."
+            echo
+            echo 'Какой файл ставить: `arm64-v8a` подходит почти всем телефонам последних лет,'
+            echo '`armeabi-v7a` старым 32-битным, `x86_64` эмуляторам и редким планшетам.'
+            echo 'Ставится рядом с FlClash и Hiddify, не заменяя их.'
+            echo
+            echo "Контрольные суммы в \`SHA256SUMS\`, сертификат подписи SHA-256: \`$CERT_SHA256\`."
+          } > release-notes.md
+          cat release-notes.md
+
       - name: Draft release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
@@ -157,15 +181,4 @@ jobs:
           prerelease: true
           name: NekoVPN ${{ github.ref_name }} (тестовая сборка)
           files: release/*
-          body: |
-            Тестовая сборка NekoVPN для Android — изменённой версии FlClash.
-            Что изменено: [CHANGELOG-NEKO.md](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/CHANGELOG-NEKO.md).
-
-            Какой файл ставить:
-            - `arm64-v8a` — почти все телефоны последних лет;
-            - `armeabi-v7a` — старые 32-битные телефоны;
-            - `x86_64` — эмуляторы и редкие планшеты.
-
-            Ставится рядом с FlClash и Hiddify, не заменяя их. Контрольные
-            суммы — в `SHA256SUMS`; сертификат подписи SHA-256:
-            `${{ env.CERT_SHA256 }}`.
+          body_path: release-notes.md
