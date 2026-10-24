@@ -19,10 +19,10 @@ concurrency:
 permissions:
   contents: write
 
+# Flutter, Go, the NDK and the CA bundle are not pinned here: the first step
+# reads upstream's build.yaml, so the core is always built with the
+# toolchain upstream tested it with, and an upstream merge moves both.
 env:
-  FLUTTER_VERSION: '3.47.4'
-  GO_VERSION: '1.26.4'
-  NDK_VERSION: r28c
   PACKAGE: com.nekovpn.client
   # Not a secret: as one, GitHub would mask the word in every log line.
   KEY_ALIAS: nekovpn
@@ -49,6 +49,44 @@ jobs:
             exit 1
           fi
 
+      # A build on an old base would ship a core and dependencies upstream
+      # has already moved past: merge upstream first (docs/PLAN.md, section
+      # 7). The repository variable NEKO_ALLOW_OLD_UPSTREAM=1 lets one urgent
+      # build through; delete it afterwards.
+      - name: Based on the latest upstream release
+        if: vars.NEKO_ALLOW_OLD_UPSTREAM != '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          code=0
+          versions="$(bash tool/neko/upstream_base.sh)" || code=$?
+          read -r base latest <<< "$versions"
+          case "$code" in
+            0) echo "based on v$base, upstream's latest release is v$latest" ;;
+            10)
+              echo "upstream released v$latest, this build is based on v$base:" >&2
+              echo "merge upstream first (docs/PLAN.md, section 7)" >&2
+              exit 1
+              ;;
+            *) exit 1 ;;
+          esac
+
+      - name: Toolchain from upstream's build.yaml
+        run: |
+          pin() {
+            value="$(yq -e "$2" .github/workflows/build.yaml)" || {
+              echo "build.yaml has no $1 at $2" >&2
+              exit 1
+            }
+            echo "$1=$value" | tee -a "$GITHUB_ENV"
+          }
+          ca='.jobs.build.steps[] | select(.name == "Fetch CA certificates")'
+          pin FLUTTER_VERSION '.env.FLUTTER_VERSION'
+          pin GO_VERSION '.env.GO_VERSION'
+          pin NDK_VERSION '.env.NDK_VERSION'
+          pin CA_BUNDLE "$ca | .env.CA_BUNDLE"
+          pin CA_BUNDLE_SHA256 "$ca | .env.CA_BUNDLE_SHA256"
+
       - name: Setup signing
         env:
           KEYSTORE: ${{ secrets.NEKO_KEYSTORE }}
@@ -72,18 +110,14 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      # No caches, as in upstream's release build (.agents/commands.md, "CI
+      # Caches"): a tag run starts cold, and its entries would only evict
+      # the ones branch runs read.
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
-          cache-dependency-path: core/go.sum
-
-      - name: Setup Rust cache
-        uses: Swatinem/rust-cache@v2
-        with:
-          key: neko-android
-          workspaces: plugins/rust_api/rust
-          cache-directories: .dart_tool/hooks_runner
+          cache: false
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
@@ -93,7 +127,7 @@ jobs:
         with:
           channel: stable
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
+          cache: false
 
       - name: Setup NDK
         uses: nttld/setup-ndk@v1
@@ -107,6 +141,15 @@ jobs:
         run: |
           flutter --version
           flutter pub get
+
+      # Upstream's step, word for word (test/neko/release_workflow_test.dart):
+      # the core embeds this bundle, and the app trusts it for downloads.
+      - name: Fetch CA certificates
+        shell: bash
+        run: |
+          bundle=core/Clash.Meta/component/ca/ca-certificates.crt
+          curl -fsSL --retry 3 -o "$bundle" "https://curl.se/ca/$CA_BUNDLE"
+          echo "$CA_BUNDLE_SHA256  $bundle" | sha256sum -c -
 
       - name: Build
         env:

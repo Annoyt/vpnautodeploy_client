@@ -34,13 +34,6 @@ object GlobalState : CoroutineScope by CoroutineScope(SupervisorJob() + Dispatch
         Log.d("FlClash", text)
     }
 
-    // NekoVPN ships without Firebase: crash reporting is off for good, and
-    // the Dart side keeps calling these as if a user had switched it off.
-    @Suppress("UNUSED_PARAMETER")
-    fun setCrashlytics(enable: Boolean) = Unit
-
-    fun didCrashOnPreviousExecution(): Boolean = false
-
     fun lastExitInfo(): Map<String, Any?>? {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return null
         val manager = application.getSystemService(ActivityManager::class.java) ?: return null

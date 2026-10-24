@@ -10,6 +10,9 @@ const nekoModifiedOn = '2026-10-10';
 /// translations often, and every one of those merges would conflict.
 bool get _isRu => Intl.getCurrentLocale().startsWith('ru');
 
+/// An upstream text about the app that names FlClash, naming NekoVPN.
+String nekoBranded(String text) => text.replaceAll('FlClash', 'NekoVPN');
+
 String get nekoBasedOnTitle => _isRu ? 'На основе FlClash' : 'Based on FlClash';
 
 String get nekoDescription => _isRu ? _descriptionRu : _descriptionEn;
@@ -47,8 +50,7 @@ const _privacyRu =
     'Программа обращается к сети только при использовании соответствующих '
     'функций: загружает указанный вами адрес подписки при обновлении профиля '
     'и обращается к GitHub при проверке обновлений.\n\n'
-    'NekoVPN не содержит сервисов статистики и отчётов о сбоях: Firebase '
-    'Crashlytics и Analytics из Android-версии FlClash здесь удалены. Сканер '
+    'NekoVPN не содержит сервисов статистики и отчётов о сбоях. Сканер '
     'QR-кодов в Android-версии работает на Google ML Kit; по условиям Google '
     'он может отправлять Google обезличенные метрики работы сканера.';
 
@@ -59,7 +61,6 @@ const _privacyEn =
     'The Software only reaches the network when you use a feature that needs '
     'it: fetching the subscription URL you provided when updating a profile, '
     'and contacting GitHub when checking for updates.\n\n'
-    'NekoVPN includes no analytics or crash reporting service: the Firebase '
-    'Crashlytics and Analytics of the FlClash Android build are removed. The '
-    'Android QR code scanner runs on Google ML Kit, which by the terms of '
-    'Google may send Google anonymous metrics about the scanner.';
+    'NekoVPN includes no analytics or crash reporting service. The Android '
+    'QR code scanner runs on Google ML Kit, which by the terms of Google may '
+    'send Google anonymous metrics about the scanner.';

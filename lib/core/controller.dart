@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/core.dart';
 import 'package:fl_clash/core/interface.dart';
+import 'package:fl_clash/core/spill.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
@@ -95,6 +96,38 @@ class CoreController {
     return res;
   }
 
+  /// An age-encrypted config is rewritten in place into its plaintext, and a
+  /// share-link list into a config of its proxies.
+  Future<String> validateProfile(
+    String path, [
+    String ageSecretKey = '',
+  ]) async {
+    final file = File(path);
+    if (await file.isAgeEncrypted) {
+      if (ageSecretKey.isEmpty) {
+        throw const AgeSecretKeyRequiredException();
+      }
+      await file.safeWriteAsString(
+        await _interface.decryptConfig(path, ageSecretKey),
+      );
+    }
+    final message = await validateConfig(path);
+    if (message.isEmpty) {
+      return message;
+    }
+    final List<Map<String, dynamic>> proxies;
+    try {
+      proxies = await _interface.convertProxies(path);
+    } on Exception {
+      return message;
+    }
+    if (proxies.isEmpty) {
+      return message;
+    }
+    await file.safeWriteAsString(await encodeYamlTask({'proxies': proxies}));
+    return validateConfig(path);
+  }
+
   Future<List<String>> validateProxies(List<Map<String, dynamic>> proxies) {
     if (proxies.isEmpty) {
       return Future.value(const []);
@@ -102,10 +135,33 @@ class CoreController {
     return _interface.validateProxies(proxies);
   }
 
-  Future<String> validateConfigWithData(String data) async {
+  Future<List<String>> validateFilters(List<String> filters) {
+    if (filters.isEmpty) {
+      return Future.value(const []);
+    }
+    return _interface.validateFilters(filters);
+  }
+
+  Future<List<String>> encodeShareLinks(List<Map<String, dynamic>> proxies) {
+    if (proxies.isEmpty) {
+      return Future.value(const []);
+    }
+    return _interface.encodeShareLinks(proxies);
+  }
+
+  Future<List<List<Map<String, dynamic>>>> decodeShareLinks(
+    List<String> lines,
+  ) {
+    if (lines.isEmpty) {
+      return Future.value(const []);
+    }
+    return _interface.decodeShareLinks(lines);
+  }
+
+  Future<String> validateConfigWithData(List<int> data) async {
     final path = await appPath.tempFilePath;
     final file = File(path);
-    await file.safeWriteAsString(data);
+    await file.safeWriteAsBytes(data);
     final res = await _interface.validateConfig(path);
     await File(path).safeDelete();
     return res;
@@ -155,6 +211,10 @@ class CoreController {
     return _interface.watchRoute(watch);
   }
 
+  Future<RouteCheck?> checkRoutes(CheckRoutesParams params) {
+    return _interface.checkRoutes(params);
+  }
+
   Future<List<TrackerInfo>> getConnections() async {
     return _interface.getConnections();
   }
@@ -173,6 +233,10 @@ class CoreController {
 
   Future<void> resetConnections() async {
     await _interface.resetConnections();
+  }
+
+  Future<bool> clearDnsCache() async {
+    return _interface.clearDnsCache();
   }
 
   Future<List<ExternalProvider>> getExternalProviders() async {
@@ -203,6 +267,10 @@ class CoreController {
     return _interface.dumpRuleSet(path);
   }
 
+  Future<RuleSetInfo> compileRuleSet(String name, {String url = ''}) {
+    return _interface.compileRuleSet(name, url: url);
+  }
+
   Future<String> updateExternalProvider({required String providerName}) async {
     return _interface.updateExternalProvider(providerName);
   }
@@ -215,8 +283,12 @@ class CoreController {
     return _interface.stopListener();
   }
 
-  Future<Delay?> getDelay(String url, String proxyName) async {
-    return _interface.asyncTestDelay(url, proxyName);
+  Future<Delay?> getDelay(
+    String url,
+    String proxyName,
+    Duration timeout,
+  ) async {
+    return _interface.asyncTestDelay(url, proxyName, timeout);
   }
 
   Future<ProbeResult?> probe(ProbeParams params) => _interface.probe(params);
@@ -231,15 +303,32 @@ class CoreController {
     return _readConfig(await appPath.getProfilePath(id.toString()));
   }
 
-  Future<Map<String, dynamic>> getAppliedConfig() async {
-    return _readConfig(await appPath.configFilePath);
-  }
-
   Future<Map<String, dynamic>> _readConfig(String path) async {
     final data = Map<String, dynamic>.from(await _interface.getConfig(path));
     data['rules'] = data['rule'];
     data.remove('rule');
     return data;
+  }
+
+  Future<Map<String, dynamic>> getProfileOutbounds(int id) async {
+    return _interface.getProfileOutbounds(
+      await appPath.getProfilePath(id.toString()),
+    );
+  }
+
+  Future<Map<String, dynamic>?> getProxyDefinition(String name) {
+    return _interface.getProxyDefinition(name);
+  }
+
+  Future<String> buildProfile(SetupBase base) async {
+    return readSpilledText(await _interface.buildProfile(base));
+  }
+
+  Future<({ProfileBase base, String path})> getProfileBase(int id) async {
+    final path = await appPath.getProfilePath(id.toString());
+    final base = await _interface.getProfileBase(path);
+    final config = Map<String, dynamic>.from(base.config)..remove('rule');
+    return (base: base.copyWith(config: config), path: path);
   }
 
   Future<Traffic> getTraffic(bool onlyStatisticsProxy) async {

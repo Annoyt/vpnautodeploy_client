@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fl_clash/neko/update.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -71,6 +73,46 @@ void main() {
     });
   });
 
+  group('nekoReleasesFromFeed', () {
+    List<Object?> tags(String feed) {
+      return [
+        for (final release in nekoReleasesFromFeed(feed)) release['tag_name'],
+      ];
+    }
+
+    test('reads the releases neko-release.yaml published', () {
+      expect(tags(_feed), ['v0.9.2-neko.1', 'v0.8.99-neko.2']);
+      final first = nekoReleasesFromFeed(_feed).first;
+      expect(first['html_url'], '$_releases/tag/v0.9.2-neko.1');
+    });
+
+    test('each counts as a published prerelease', () {
+      for (final release in nekoReleasesFromFeed(_feed)) {
+        expect(release['prerelease'], isTrue);
+        expect(release['draft'], isFalse);
+      }
+    });
+
+    test('a test build takes the newest, a stable build none', () {
+      expect(pick(nekoReleasesFromFeed(_feed)), 'v0.9.2-neko.1');
+      expect(pick(nekoReleasesFromFeed(_feed), pre: false), isNull);
+    });
+
+    test('junk is no release and no crash', () {
+      expect(tags(''), isEmpty);
+      expect(tags('<entry><title>NekoVPN v1</title></entry>'), isEmpty);
+      expect(tags('<entry>$_releases/tag/v0.9.2-neko.1'), isEmpty);
+    });
+
+    test('neko-release.yaml still titles a release the way it is read', () {
+      final workflow = File('.github/workflows/neko-release.yaml');
+      expect(
+        workflow.readAsStringSync(),
+        contains(r'name: NekoVPN ${{ github.ref_name }} ('),
+      );
+    });
+  });
+
   group('nekoReleasePageUrl', () {
     test('opens the release the dialog showed', () {
       final url = nekoReleasePageUrl(release('v0.8.99-neko.2'));
@@ -90,3 +132,37 @@ void main() {
     });
   });
 }
+
+/// A release feed as GitHub serves it: the bare tag of a build still in
+/// draft, two published releases, a release of another repository, a title
+/// naming another tag, a repeated entry.
+const _feed = '''
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-US">
+  <title>Release notes from vpnautodeploy_client</title>
+  <entry>
+    <link rel="alternate" type="text/html" href="https://github.com/Annoyt/vpnautodeploy_client/releases/tag/v0.9.2-neko.2"/>
+    <title>Merge pull request #9 from Annoyt/neko/next</title>
+  </entry>
+  <entry>
+    <link rel="alternate" type="text/html" href="https://github.com/Annoyt/vpnautodeploy_client/releases/tag/v0.9.2-neko.1"/>
+    <title>NekoVPN v0.9.2-neko.1 (тестовая сборка)</title>
+  </entry>
+  <entry>
+    <link rel="alternate" type="text/html" href="https://github.com/chen08209/FlClash/releases/tag/v0.9.3-neko.1"/>
+    <title>NekoVPN v0.9.3-neko.1</title>
+  </entry>
+  <entry>
+    <link rel="alternate" type="text/html" href="https://github.com/Annoyt/vpnautodeploy_client/releases/tag/v0.9.1-neko.3"/>
+    <title>NekoVPN v0.9.1-neko.30</title>
+  </entry>
+  <entry>
+    <link rel="alternate" type="text/html" href="https://github.com/Annoyt/vpnautodeploy_client/releases/tag/v0.8.99-neko.2"/>
+    <title>NekoVPN v0.8.99-neko.2</title>
+  </entry>
+  <entry>
+    <link rel="alternate" type="text/html" href="https://github.com/Annoyt/vpnautodeploy_client/releases/tag/v0.8.99-neko.2"/>
+    <title>NekoVPN v0.8.99-neko.2</title>
+  </entry>
+</feed>
+''';

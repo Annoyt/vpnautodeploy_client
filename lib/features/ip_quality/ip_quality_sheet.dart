@@ -1,9 +1,9 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/common/ip_quality.dart';
-import 'package:fl_clash/icons/icons.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/providers/config.dart';
 import 'package:fl_clash/providers/ip_quality.dart';
+import 'package:fl_clash/ui/icons/icons.dart';
 import 'package:fl_clash/widgets/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
@@ -34,7 +34,7 @@ class _IpQualitySheet extends ConsumerWidget {
     final isLoading = ref.watch(
       ipQualityProvider(ip).select((result) => result.isLoading),
     );
-    final page = CommonScaffold(
+    return CommonScaffold(
       title: localizations.outboundIp,
       actions: [
         AppBarActionButton(
@@ -47,13 +47,6 @@ class _IpQualitySheet extends ConsumerWidget {
         ),
       ],
       body: _IpQualityDetail(ip: ip),
-    );
-    if (!isSheetPage(context)) return page;
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: ref.sheetHeight(context, shortSheetMaxHeight),
-      ),
-      child: page,
     );
   }
 }
@@ -72,7 +65,7 @@ class _HideIpItem extends ConsumerWidget {
     return DecorationListItem(
       title: Text(context.appLocalizations.hideIp),
       onPressed: () => update(!hideIp),
-      trailing: Switch(value: hideIp, onChanged: update),
+      trailing: CommonSwitch(value: hideIp, onChanged: update),
     );
   }
 }
@@ -94,20 +87,21 @@ class _IpQualityDetail extends ConsumerWidget {
     final failed = quality == null && !result.isLoading;
     return ListView(
       shrinkWrap: true,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-      ).copyWith(bottom: 20, top: context.contentTopPadding),
+      padding: const EdgeInsets.symmetric(horizontal: 16).copyWith(
+        bottom: 20 + context.bottomInset,
+        top: context.contentTopPadding,
+      ),
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(_tipInset, 8, _tipInset, 0),
           child: Text(
             localizations.detectionTip,
-            style: context.textTheme.bodyLarge?.copyWith(
-              color: context.colorScheme.onSurfaceVariant,
-            ),
+            style: AppTextStyle.body
+                .of(context)
+                .copyWith(color: context.colorScheme.onSurfaceVariant),
           ),
         ),
-        generateSectionV3(
+        generateSection(
           title: localizations.basicInfo,
           items: [
             DetailRow(
@@ -128,12 +122,12 @@ class _IpQualityDetail extends ConsumerWidget {
           ],
         ),
         if (!failed)
-          generateSectionV3(
+          generateSection(
             title: localizations.network,
             items: _networkRows(context, quality),
           ),
         if (failed && error is IpQualityLookupException)
-          generateSectionV3(
+          generateSection(
             title: localizations.ipQualitySources,
             items: [
               for (final failure in error.failures)
@@ -143,7 +137,7 @@ class _IpQualityDetail extends ConsumerWidget {
                 ),
             ],
           ),
-        generateSectionV3(
+        generateSection(
           title: localizations.other,
           items: const [_HideIpItem()],
         ),

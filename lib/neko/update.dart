@@ -36,6 +36,43 @@ Map<String, dynamic>? pickNekoUpdate(
   return best;
 }
 
+final _feedEntry = RegExp(r'<entry>(.*?)</entry>', dotAll: true);
+final _feedTitle = RegExp(r'<title>([^<]*)</title>');
+final _feedTag = RegExp(
+  '${RegExp.escape('https://github.com/$repository/releases/tag/')}'
+  r'([^"<\s]+)',
+);
+
+/// The title neko-release.yaml gives a release: `NekoVPN <tag>`, maybe
+/// followed by a note such as "(тестовая сборка)".
+bool _isReleaseTitle(String title, String tag) {
+  return title == 'NekoVPN $tag' || title.startsWith('NekoVPN $tag ');
+}
+
+/// Published releases named by the public feed (`/releases.atom`), the
+/// fallback once the API quota is spent. The feed lists bare tags too, and
+/// the tag of a build still waiting as a draft is one: only an entry titled
+/// the way neko-release.yaml names a release counts. The feed does not say
+/// which are prereleases, so each counts as one.
+List<Map<String, dynamic>> nekoReleasesFromFeed(String feed) {
+  final releases = <Map<String, dynamic>>[];
+  final seen = <String>{};
+  for (final entry in _feedEntry.allMatches(feed)) {
+    final body = entry.group(1)!;
+    final tag = _feedTag.firstMatch(body)?.group(1);
+    final title = _feedTitle.firstMatch(body)?.group(1)?.trim() ?? '';
+    if (tag == null || !_isReleaseTitle(title, tag)) continue;
+    if (!seen.add(tag)) continue;
+    releases.add({
+      'tag_name': tag,
+      'prerelease': true,
+      'draft': false,
+      'html_url': 'https://github.com/$repository/releases/tag/$tag',
+    });
+  }
+  return releases;
+}
+
 /// Where "Download" leads: the page of the release the dialog showed, and
 /// only one in this repository; the release list otherwise.
 String nekoReleasePageUrl(Map<String, dynamic> release) {
