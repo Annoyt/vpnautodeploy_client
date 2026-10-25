@@ -98,6 +98,41 @@ class CommonAction extends _$CommonAction {
     return res != null;
   }
 
+  /// NekoVPN's signed remote settings (lib/neko/remote_settings.dart): keeps
+  /// a newer document, then asks for an update or shows the message.
+  Future<void> checkNekoSettings() async {
+    final settings = await nekoRefreshSettings(
+      get: (url) => nekoGetJson(request.dio, url),
+    );
+    if (settings == null) return;
+    final installed = globalState.packageInfo.version;
+    if (nekoUpdateRequired(settings, installed: installed)) {
+      final update = await dialogs.showMessage(
+        title: nekoUpdateTitle,
+        message: TextSpan(text: nekoUpdateText),
+        confirmText: currentAppLocalizations.goDownload,
+      );
+      if (update == true) unawaited(launchUrl(Uri.parse(nekoReleasesUrl)));
+    }
+    final message = await nekoMessageToShow(settings);
+    if (message == null) return;
+    final url = message.url;
+    if (url == null) {
+      await dialogs.showAlert(
+        title: appName,
+        message: TextSpan(text: message.text),
+      );
+    } else {
+      final open = await dialogs.showMessage(
+        title: appName,
+        message: TextSpan(text: message.text),
+        confirmText: nekoOpenLink,
+      );
+      if (open == true) unawaited(launchUrl(Uri.parse(url)));
+    }
+    await NekoSettingsStore.markShown(message.id);
+  }
+
   TextSpan _releaseSpan(BuildContext context, String tagName, String? body) {
     final version = parseReleaseChangelog(body);
     return TextSpan(
