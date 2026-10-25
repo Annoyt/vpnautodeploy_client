@@ -31,6 +31,18 @@ void main() {
     }
   });
 
+  test('the QR scanner decodes with zxing-cpp, not ML Kit', () {
+    expect(_read('pubspec.yaml'), contains('path: third_party/mobile_scanner'));
+    const plugin = 'third_party/mobile_scanner/android';
+    expect(
+      _read('$plugin/build.gradle.kts'),
+      contains('io.github.zxing-cpp:android:'),
+    );
+    for (final file in _sources(plugin, ['.kt', '.kts', '.pro', '.xml'])) {
+      expect(_read(file.path), isNot(contains('mlkit')), reason: file.path);
+    }
+  });
+
   test('no Firebase in Kotlin or Java code', () {
     for (final file in _sources('android', ['.kt', '.java'])) {
       expect(

@@ -138,9 +138,9 @@ const _privacyRu =
     'Программа обращается к сети только при использовании соответствующих '
     'функций: загружает указанный вами адрес подписки при обновлении профиля '
     'и обращается к GitHub при проверке обновлений.\n\n'
-    'NekoVPN не содержит сервисов статистики и отчётов о сбоях. Сканер '
-    'QR-кодов в Android-версии работает на Google ML Kit; по условиям Google '
-    'он может отправлять Google обезличенные метрики работы сканера.';
+    'NekoVPN не содержит сервисов статистики и отчётов о сбоях. QR-коды '
+    'распознаются на устройстве открытой библиотекой zxing-cpp, без '
+    'сервисов Google.';
 
 const _privacyEn =
     'The Software does not collect or upload your subscription URLs, node '
@@ -149,6 +149,6 @@ const _privacyEn =
     'The Software only reaches the network when you use a feature that needs '
     'it: fetching the subscription URL you provided when updating a profile, '
     'and contacting GitHub when checking for updates.\n\n'
-    'NekoVPN includes no analytics or crash reporting service. The Android '
-    'QR code scanner runs on Google ML Kit, which by the terms of Google may '
-    'send Google anonymous metrics about the scanner.';
+    'NekoVPN includes no analytics or crash reporting service. QR codes are '
+    'read on the device by the open-source zxing-cpp library, with no Google '
+    'service.';

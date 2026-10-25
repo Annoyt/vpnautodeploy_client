@@ -174,14 +174,17 @@ jobs:
             echo "$certs" | grep -E 'certificate (DN|SHA-256 digest):'
             cert="$(echo "$certs" | sed -n 's/.*certificate SHA-256 digest: //p' | sort -u)"
             [ "$cert" = "$CERT_SHA256" ] || { echo "$apk: signed by $cert" >&2; exit 1; }
-            # What the fork removed must stay out. firebase-components and
-            # -encoders remain on purpose: Google ML Kit (mobile_scanner, the
-            # QR scanner) runs on them; they are listed, not failed.
-            if unzip -l "$apk" | grep -i -E 'crashlytics|firebase-analytics|measurement'; then
-              echo "$apk carries Firebase Crashlytics or Analytics" >&2
+            # What the fork removed must stay out: Firebase, Google ML Kit
+            # and its telemetry transport (the QR scanner decodes with
+            # zxing-cpp since 0.9.2-neko.2, third_party/mobile_scanner).
+            if unzip -l "$apk" | grep -i -E 'crashlytics|firebase|measurement|mlkit|datatransport'; then
+              echo "$apk carries Firebase, ML Kit or Google's datatransport" >&2
               exit 1
             fi
-            unzip -l "$apk" | grep -i -E 'firebase|mlkit|datatransport' || true
+            unzip -l "$apk" | grep -q 'libzxingcpp_android.so' || {
+              echo "$apk has no zxing-cpp decoder: the QR scanner would not work" >&2
+              exit 1
+            }
           done
           (cd release && sha256sum -- * > SHA256SUMS && cat SHA256SUMS)
 

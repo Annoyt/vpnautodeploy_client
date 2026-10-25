@@ -51,13 +51,15 @@ void main() {
     expect(en, contains(nekoModifiedOn));
   });
 
-  test('the privacy text: no analytics, ML Kit named', () {
+  test('the privacy text: no analytics, a local QR decoder', () {
     final ru = Intl.withLocale('ru', () => nekoPrivacyContent);
     final en = Intl.withLocale('en', () => nekoPrivacyContent);
     expect(ru, contains('не содержит сервисов статистики и отчётов о сбоях'));
     expect(en, contains('includes no analytics or crash reporting service'));
-    expect(ru, contains('Google ML Kit'));
-    expect(en, contains('Google ML Kit'));
+    for (final text in [ru, en]) {
+      expect(text, contains('zxing-cpp'));
+      expect(text, isNot(contains('ML Kit')));
+    }
   });
 
   test('upstream texts about the app name NekoVPN', () {
