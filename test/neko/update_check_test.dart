@@ -115,7 +115,10 @@ void main() {
   });
 
   test('an answer that is not a list is no update and no crash', () async {
-    expect((await _check({'tag_name': 'v0.8.99-neko.2'})).$1, isNull);
+    final (data, adapter) = await _check({'tag_name': 'v0.8.99-neko.2'});
+    expect(data, isNull);
+    // GitHub did answer: only a failed request goes to the feed.
+    expect(adapter.requested, hasLength(1));
   });
 
   group('once the API quota is spent', () {

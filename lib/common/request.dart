@@ -109,7 +109,7 @@ class Request {
         options: Options(responseType: ResponseType.json),
       );
       final data = response.data;
-      if (data is List) return data;
+      return data is List ? data : const [];
     } on DioException catch (error) {
       commonPrint.log(
         'release list API failed: ${compactError(error)}',
