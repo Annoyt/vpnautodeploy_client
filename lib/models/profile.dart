@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart' show Headers;
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/neko/profile_update.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'clash_config.dart';
@@ -184,17 +186,25 @@ extension ProfileExtension on Profile {
 
   Future<Profile> update({required ValidateConfig validate}) async {
     final response = await request.getFileResponseForUrl(url);
-    final disposition = response.headers.value('content-disposition');
-    final userinfo = response.headers.value('subscription-userinfo');
+    return withSubscriptionHeaders(response.headers).saveFile(
+      decompressUnlabeled(response.data ?? Uint8List(0)),
+      validate: validate,
+    );
+  }
+
+  /// What the subscription's answer says about the profile: its name, the
+  /// traffic and expiry and, in NekoVPN, how often to fetch it again.
+  Profile withSubscriptionHeaders(Headers headers) {
+    final disposition = headers.value('content-disposition');
+    final userinfo = headers.value('subscription-userinfo');
+    final interval = headers.value('profile-update-interval');
     return copyWith(
       label: label.takeFirstValid([
         getFileNameForDisposition(disposition),
         defaultLabel,
       ]),
       subscriptionInfo: SubscriptionInfo.formHString(userinfo),
-    ).saveFile(
-      decompressUnlabeled(response.data ?? Uint8List(0)),
-      validate: validate,
+      autoUpdateDuration: nekoUpdateInterval(interval) ?? autoUpdateDuration,
     );
   }
 

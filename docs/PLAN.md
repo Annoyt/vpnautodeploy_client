@@ -48,7 +48,11 @@
 ### 3.1 Подписка
 - `GET /sub/<token>?format=clash` → JSON (подмножество YAML 1.2, mihomo
   читает как обычный профиль). Заголовки: `content-disposition` (имя профиля),
-  `subscription-userinfo` (трафик и срок), `profile-title`.
+  `subscription-userinfo` (трафик и срок), `profile-title`,
+  `profile-update-interval` (часы; бот шлёт 6). С 0.9.2-neko.1 приложение
+  берёт из него интервал автообновления профиля, от часа до недели
+  (`lib/neko/profile_update.dart`); FlClash заголовок не читает и обновляет
+  профиль раз в сутки.
 - Содержимое: `proxies` (VLESS-Reality, Hysteria2 с obfs и port hopping,
   VMess/httpupgrade, SS-2022 за ShadowTLS v3, резервный узел для paid),
   `proxy-groups` (VPN / Auto / Calls; позже Cascade — `fallback` в порядке
