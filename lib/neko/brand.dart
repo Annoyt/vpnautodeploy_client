@@ -10,6 +10,24 @@ const nekoModifiedOn = '2026-10-10';
 /// translations often, and every one of those merges would conflict.
 bool get _isRu => Intl.getCurrentLocale().startsWith('ru');
 
+String get nekoUpdateTitle => _isRu ? _updateTitleRu : _updateTitleEn;
+
+String get nekoUpdateText => _isRu ? _updateTextRu : _updateTextEn;
+
+String get nekoOpenLink => _isRu ? 'Открыть' : 'Open';
+
+const _updateTitleRu = 'Нужно обновить NekoVPN';
+
+const _updateTitleEn = 'Please update NekoVPN';
+
+const _updateTextRu =
+    'Эта версия NekoVPN устарела и может перестать подключаться. Скачайте '
+    'новую и установите поверх: профили и настройки сохранятся.';
+
+const _updateTextEn =
+    'This version of NekoVPN is outdated and may stop connecting. Download '
+    'the new one and install it over this one: profiles and settings stay.';
+
 /// An upstream text about the app that names FlClash, naming NekoVPN.
 String nekoBranded(String text) => text.replaceAll('FlClash', 'NekoVPN');
 

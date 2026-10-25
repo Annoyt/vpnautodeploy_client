@@ -54,12 +54,12 @@ void main() {
 
   group('nekoMirrorsFromHeader', () {
     test('https mirrors in their order, without repeats', () {
-      final header = '$_m1, $_m2,$_m1';
+      const header = '$_m1, $_m2,$_m1';
       expect(nekoMirrorsFromHeader(header, url: _url), [_m1, _m2]);
     });
 
     test('never the profile itself, plain http or junk', () {
-      final header = '$_url, http://m3.example/sub/token, not a url, https://';
+      const header = '$_url, http://m3.example/sub/token, not a url, https://';
       expect(nekoMirrorsFromHeader(header, url: _url), isEmpty);
     });
 

@@ -80,10 +80,13 @@ List<Map<String, dynamic>> nekoReleasesFromFeed(String feed) {
   return releases;
 }
 
+/// The release list of this repository.
+const nekoReleasesUrl = 'https://github.com/$repository/releases';
+
 /// Where "Download" leads: the page of the release the dialog showed, and
 /// only one in this repository; the release list otherwise.
 String nekoReleasePageUrl(Map<String, dynamic> release) {
-  const releases = 'https://github.com/$repository/releases';
   final url = release['html_url'];
-  return url is String && url.startsWith('$releases/') ? url : releases;
+  final ours = url is String && url.startsWith('$nekoReleasesUrl/');
+  return ours ? url : nekoReleasesUrl;
 }
