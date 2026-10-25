@@ -1,0 +1,48 @@
+name: neko-upstream-watch
+
+# Opens an issue when FlClash publishes a release newer than the one this
+# fork is based on. neko-release.yaml refuses to build on an old base, so
+# the merge (docs/PLAN.md, section 7) should land before the next build.
+
+on:
+  schedule:
+    - cron: '23 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    name: Upstream release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Open an issue for a new upstream release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          code=0
+          versions="$(bash tool/neko/upstream_base.sh)" || code=$?
+          read -r base latest <<< "$versions"
+          if [ "$code" = 0 ]; then
+            echo "based on v$base, upstream's latest release is v$latest"
+            exit 0
+          fi
+          [ "$code" = 10 ] || exit 1
+          export TITLE="Апстрим FlClash v$latest: слить до следующей сборки"
+          open="$(gh issue list --state open --limit 200 --json title \
+            --jq '[.[] | select(.title == env.TITLE)] | length')"
+          if [ "$open" != 0 ]; then
+            echo "already open: $TITLE"
+            exit 0
+          fi
+          gh issue create --title "$TITLE" --body "$(cat <<BODY
+          FlClash выпустил [v$latest](https://github.com/chen08209/FlClash/releases/tag/v$latest), форк основан на v$base.
+
+          Пока апстрим не слит, \`neko-release.yaml\` не соберёт релиз: ядро и зависимости сборки должны быть теми, что проверил апстрим. Порядок слияния — [docs/PLAN.md](https://github.com/$GITHUB_REPOSITORY/blob/main/docs/PLAN.md), раздел 7.
+          BODY
+          )"
