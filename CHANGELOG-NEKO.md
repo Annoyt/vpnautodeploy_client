@@ -13,6 +13,8 @@
 
 На основе апстрима FlClash v0.9.2, как и предыдущая.
 
+- **Сканер QR без Google.** QR-коды распознаются прямо на телефоне
+  открытой библиотекой zxing-cpp, без Google ML Kit и его отправки данных.
 - **Кнопка «Не подключается».** В «Инструментах»: одно касание отправляет в
   поддержку, что видит приложение, и показывает, что у сервиса работает
   прямо сейчас. Оттуда же добавляется аварийный профиль. Если сервис
@@ -47,12 +49,22 @@ Ed25519 ключом, который хранится только на маши
 ответа отовсюду — ссылка `t.me/neko_vpnbot?start=sos` (запускает `/sos`)
 и копия отчёта.
 
+Сканер QR (E36): `mobile_scanner` 7.4.2 — та версия, что закреплена у
+апстрима, — лежит копией в `third_party/mobile_scanner`, и на Android он
+распознаёт через zxing-cpp (`io.github.zxing-cpp:android` 3.1.1,
+Apache-2.0) вместо Google ML Kit. Dart-API плагина не изменилось, код
+апстрима (`lib/pages/scan.dart`, `lib/common/picker.dart`) не тронут. Что
+изменено в плагине, перечислено в `third_party/mobile_scanner/NEKO.md`.
+Проверка релиза теперь проваливает APK, где есть Firebase, ML Kit или
+`datatransport`, и APK без `libzxingcpp_android.so`.
+
 ### Изменённые файлы апстрима
 
 `lib/bootstrap.dart` (проверка при запуске), `lib/views/tools.dart` (пункт
 «Не подключается»), `lib/providers/action.dart`,
-`lib/providers/actions/common.dart` (`checkNekoSettings`), `pubspec.yaml`,
-`pubspec.lock`.
+`lib/providers/actions/common.dart` (`checkNekoSettings`), `pubspec.yaml`
+(`cryptography`, `mobile_scanner` из `third_party/`), `pubspec.lock`,
+`analysis_options.yaml` (`third_party/**` не анализируется).
 
 ## 0.9.2-neko.1 — 2026-10-25
 
