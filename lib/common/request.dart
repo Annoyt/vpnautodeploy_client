@@ -89,11 +89,14 @@ class Request {
   /// Null when this build is current; throws when GitHub cannot be asked.
   /// NekoVPN's channel (lib/neko/update.dart) instead of [latestRelease]:
   /// `/releases/latest` never shows a prerelease, and test builds are ones.
-  Future<Map<String, dynamic>?> checkForUpdate() async {
+  /// [includePrerelease]: a test build, the default, follows test releases.
+  Future<Map<String, dynamic>?> checkForUpdate({
+    bool includePrerelease = nekoTestBuild,
+  }) async {
     return pickNekoUpdate(
-      await nekoReleases(),
+      await nekoReleases(includePrerelease: includePrerelease),
       installed: globalState.packageInfo.version,
-      includePrerelease: globalState.isPre,
+      includePrerelease: includePrerelease,
     );
   }
 
@@ -101,7 +104,7 @@ class Request {
   /// test build the public feed, which lists prereleases too; for a stable
   /// build the latest release, which never is one.
   @visibleForTesting
-  Future<List<dynamic>> nekoReleases() async {
+  Future<List<dynamic>> nekoReleases({required bool includePrerelease}) async {
     try {
       final response = await dio.get<Object>(
         'https://api.github.com/repos/$repository/releases',
@@ -116,7 +119,7 @@ class Request {
         logLevel: LogLevel.warning,
       );
     }
-    if (!globalState.isPre) return [await latestRelease()];
+    if (!includePrerelease) return [await latestRelease()];
     final feed = await dio.get<String>(
       'https://github.com/$repository/releases.atom',
       options: Options(responseType: ResponseType.plain),

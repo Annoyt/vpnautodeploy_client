@@ -2,6 +2,13 @@ import 'package:fl_clash/common/constant.dart';
 
 import 'version.dart';
 
+/// A test build (`APP_ENV=pre`, the default): it is offered test releases.
+/// Read from the build, as lib/bootstrap.dart reads it into
+/// `globalState.appEnv`, so that the update check never depends on that
+/// field having been set.
+const nekoTestBuild =
+    String.fromEnvironment('APP_ENV', defaultValue: 'pre') != 'stable';
+
 /// Our release tags and nothing else: an upstream-style `v0.9.0`, or any
 /// other tag that ever lands in this repository, is never offered.
 final _nekoTag = RegExp(r'^v\d+\.\d+\.\d+-neko\.\d+$');

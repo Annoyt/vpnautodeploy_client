@@ -72,11 +72,16 @@ Future<(Map<String, dynamic>?, _ReleasesAdapter)> _check(Object body) async {
   }
 }
 
-Future<Map<String, dynamic>?> _checkWith(HttpClientAdapter adapter) async {
+Future<Map<String, dynamic>?> _checkWith(
+  HttpClientAdapter adapter, {
+  bool includePrerelease = true,
+}) async {
   final original = request.dio.httpClientAdapter;
   request.dio.httpClientAdapter = adapter;
   try {
-    final found = await request.checkForUpdate();
+    final found = await request.checkForUpdate(
+      includePrerelease: includePrerelease,
+    );
     return found;
   } finally {
     request.dio.httpClientAdapter = original;
@@ -91,8 +96,6 @@ void main() {
       version: '0.8.99-neko.1',
       buildNumber: '2026101001',
     );
-    // Test builds run as APP_ENV=pre, the channel that sees prereleases.
-    globalState.appEnv = 'pre';
   });
 
   test('reads the release list of this repository, not upstream', () async {
@@ -133,8 +136,6 @@ void main() {
     });
 
     test('a stable build takes the latest release, not the feed', () async {
-      globalState.appEnv = 'stable';
-      addTearDown(() => globalState.appEnv = 'pre');
       final adapter = _RoutesAdapter({
         _listPath: _quotaSpent,
         '$_listPath/latest': _quotaSpent,
@@ -148,7 +149,7 @@ void main() {
           },
         ),
       });
-      final found = await _checkWith(adapter);
+      final found = await _checkWith(adapter, includePrerelease: false);
       expect(found?['tag_name'], 'v0.8.99-neko.3');
       expect(adapter.requested, isNot(contains(_feedPath)));
     });
