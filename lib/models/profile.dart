@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart' show Headers;
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/neko/mirrors.dart';
 import 'package:fl_clash/neko/profile_update.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -185,7 +186,11 @@ extension ProfileExtension on Profile {
   }
 
   Future<Profile> update({required ValidateConfig validate}) async {
-    final response = await request.getFileResponseForUrl(url);
+    final response = await nekoDownloadProfile(
+      id,
+      url,
+      download: request.getFileResponseForUrl,
+    );
     return withSubscriptionHeaders(response.headers).saveFile(
       decompressUnlabeled(response.data ?? Uint8List(0)),
       validate: validate,

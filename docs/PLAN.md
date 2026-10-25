@@ -52,7 +52,10 @@
   `profile-update-interval` (часы; бот шлёт 6). С 0.9.2-neko.1 приложение
   берёт из него интервал автообновления профиля, от часа до недели
   (`lib/neko/profile_update.dart`); FlClash заголовок не читает и обновляет
-  профиль раз в сутки.
+  профиль раз в сутки. `nekovpn-mirrors` — этот же профиль на зеркалах
+  (`SUB_MIRROR_URLS`, только https, через запятую): приложение запоминает
+  их и, если основной адрес не ответил, загружает профиль с них
+  (`lib/neko/mirrors.dart`).
 - Содержимое: `proxies` (VLESS-Reality, Hysteria2 с obfs и port hopping,
   VMess/httpupgrade, SS-2022 за ShadowTLS v3, резервный узел для paid),
   `proxy-groups` (VPN / Auto / Calls; позже Cascade — `fallback` в порядке
