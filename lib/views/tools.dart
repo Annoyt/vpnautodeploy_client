@@ -2,6 +2,7 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/neko/sos_view.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/ui/icons/icons.dart';
 import 'package:fl_clash/views/about.dart';
@@ -75,6 +76,7 @@ class _ToolViewState extends ConsumerState<ToolsView> {
       appSettingProvider.select((state) => state.developerMode),
     );
     final items = [
+      generateSection(items: const [NekoSosItem()]),
       Consumer(
         builder: (_, ref, _) {
           final state = ref.watch(moreToolsSelectorStateProvider);

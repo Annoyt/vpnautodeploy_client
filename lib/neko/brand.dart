@@ -16,6 +16,76 @@ String get nekoUpdateText => _isRu ? _updateTextRu : _updateTextEn;
 
 String get nekoOpenLink => _isRu ? 'Открыть' : 'Open';
 
+String get nekoSosTitle => _isRu ? 'Не подключается' : 'Cannot connect';
+
+String get nekoSosSubtitle => _isRu ? _sosSubtitleRu : _sosSubtitleEn;
+
+String get nekoSosIntro => _isRu ? _sosIntroRu : _sosIntroEn;
+
+String get nekoSosSend => _isRu ? 'Отправить SOS' : 'Send SOS';
+
+String get nekoSosReported => _isRu ? _sosReportedRu : _sosReportedEn;
+
+String get nekoSosRepeat => _isRu ? _sosRepeatRu : _sosRepeatEn;
+
+String get nekoSosEmergency => _isRu ? _sosEmergencyRu : _sosEmergencyEn;
+
+String get nekoSosEmergencyHint => _isRu ? _sosHintRu : _sosHintEn;
+
+String get nekoSosFailed => _isRu ? _sosFailedRu : _sosFailedEn;
+
+String get nekoSosNoProfile => _isRu ? _sosNoProfileRu : _sosNoProfileEn;
+
+String get nekoSosBot => _isRu ? 'Написать боту' : 'Message the bot';
+
+String get nekoSosCopy => _isRu ? 'Скопировать отчёт' : 'Copy the report';
+
+String get nekoSosCopied => _isRu ? 'Отчёт скопирован' : 'Report copied';
+
+const _sosSubtitleRu = 'Сообщить в поддержку и узнать, что работает';
+
+const _sosSubtitleEn = 'Tell support and see what works';
+
+const _sosIntroRu =
+    'Отправим в поддержку то, что видит приложение, и покажем, что у '
+    'сервиса работает прямо сейчас.';
+
+const _sosIntroEn =
+    'We send support what the app sees and show what works on our side '
+    'right now.';
+
+const _sosReportedRu = 'Поддержка получила сообщение. Сейчас у сервиса:';
+
+const _sosReportedEn = 'Support got your message. Right now:';
+
+const _sosRepeatRu = 'Сообщение уже отправлено недавно. Сейчас у сервиса:';
+
+const _sosRepeatEn = 'You sent one a few minutes ago. Right now:';
+
+const _sosEmergencyRu = 'Добавить аварийный профиль';
+
+const _sosEmergencyEn = 'Add the emergency profile';
+
+const _sosHintRu = 'Серверы через CDN первыми, DNS через туннель';
+
+const _sosHintEn = 'CDN servers first, DNS through the tunnel';
+
+const _sosFailedRu =
+    'Не удалось связаться с сервисом. Напишите боту или скопируйте отчёт и '
+    'отправьте его любым способом.';
+
+const _sosFailedEn =
+    'Could not reach the service. Message the bot, or copy the report and '
+    'send it any way you can.';
+
+const _sosNoProfileRu =
+    'В приложении нет подписки NekoVPN. Добавьте её кнопкой «Открыть в '
+    'NekoVPN» в боте.';
+
+const _sosNoProfileEn =
+    'There is no NekoVPN subscription in the app. Add it with the «Open in '
+    'NekoVPN» button in the bot.';
+
 const _updateTitleRu = 'Нужно обновить NekoVPN';
 
 const _updateTitleEn = 'Please update NekoVPN';
