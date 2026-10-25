@@ -33,7 +33,9 @@ void main() {
 
   group('a subscription answer', () {
     test('sets how often the profile is fetched again', () {
-      final profile = _answered({'profile-update-interval': ['6']});
+      final profile = _answered({
+        'profile-update-interval': ['6'],
+      });
       expect(profile.autoUpdateDuration, const Duration(hours: 6));
     });
 
