@@ -18,6 +18,33 @@ String get nekoOpenLink => _isRu ? 'Открыть' : 'Open';
 
 String get nekoSosTitle => _isRu ? 'Не подключается' : 'Cannot connect';
 
+String get nekoMultipathTitle =>
+    _isRu ? 'Две сети сразу' : 'Two networks at once';
+
+String get nekoMultipathOff => _isRu ? 'Выключено' : 'Off';
+
+String get nekoMultipathFailover => _isRu ? 'Резерв' : 'Backup';
+
+String get nekoMultipathDistribute =>
+    _isRu ? 'Сложить скорость' : 'Combine speed';
+
+String get nekoMultipathFooter => _isRu ? _multipathRu : _multipathEn;
+
+const _multipathRu =
+    'Wi-Fi и мобильный интернет вместе. «Резерв»: если в Wi-Fi пропал '
+    'интернет, соединения сразу идут через мобильный. «Сложить скорость»: '
+    'соединения раскладываются по обеим сетям. Второй телефон с другим '
+    'оператором: включите на нём точку доступа и подключитесь к ней, а '
+    'мобильный интернет здесь оставьте включённым. Тратит мобильный трафик '
+    'и заряд.';
+
+const _multipathEn =
+    'Wi-Fi and mobile data together. Backup: when the Wi-Fi loses the '
+    'internet, connections move to mobile data at once. Combine speed: '
+    'connections are spread over both networks. A second phone on another '
+    'carrier: turn on its hotspot, join it, and keep mobile data on here. '
+    'Uses mobile data and battery.';
+
 String get nekoSosSubtitle => _isRu ? _sosSubtitleRu : _sosSubtitleEn;
 
 String get nekoSosIntro => _isRu ? _sosIntroRu : _sosIntroEn;

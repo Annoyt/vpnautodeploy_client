@@ -23,6 +23,8 @@ internal class ServiceModules(private val service: Service) {
         val nextScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
         val nextModules = listOf(
             NotificationModule(service, nextScope),
+            // NekoVPN (E37): Wi-Fi and mobile data at once; off by default.
+            NekoNetworksModule(service, nextScope),
         )
         val startedModules = mutableListOf<ServiceModule>()
 

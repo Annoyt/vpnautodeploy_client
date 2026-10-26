@@ -92,6 +92,11 @@ func ResetNetwork() {
 	core.ResetNetwork()
 }
 
+// NekoUpdateNetworks: the service's networks and the multipath mode (E37).
+func NekoUpdateNetworks(value string) {
+	core.NekoUpdateNetworks(value)
+}
+
 func GetTraffic(onlyStatisticsProxy bool) string {
 	return core.GetTraffic(onlyStatisticsProxy)
 }
