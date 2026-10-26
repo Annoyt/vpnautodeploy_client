@@ -138,6 +138,8 @@ func installHooks() {
 			}
 			return conn.Control(func(fd uintptr) {
 				th.handleProtect(int(fd))
+				// NekoVPN (E37): Wi-Fi and mobile data at once.
+				nekoBindSocket(address, int(fd))
 			})
 		}
 		process.DefaultPackageNameResolver = func(metadata *constant.Metadata) (string, error) {
