@@ -1,20 +1,46 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:fl_clash/neko/gateway.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/app_paths.dart';
 
+/// An address as the device lists it; only what the code reads is real.
+class _Address implements InterfaceAddress {
+  _Address(String value) : _address = InternetAddress(value);
+
+  final InternetAddress _address;
+
+  @override
+  String get address => _address.address;
+
+  @override
+  InternetAddressType get type => _address.type;
+
+  @override
+  Uint8List get rawAddress => _address.rawAddress;
+
+  @override
+  int get prefixLength => 24;
+
+  @override
+  InternetAddress? get broadcast => null;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 class _Interface implements NetworkInterface {
   _Interface(this.name, List<String> addresses)
-    : addresses = [for (final value in addresses) InternetAddress(value)];
+    : addresses = [for (final value in addresses) _Address(value)];
 
   @override
   final String name;
 
   @override
-  final List<InternetAddress> addresses;
+  final List<InterfaceAddress> addresses;
 
   @override
   int get index => 0;

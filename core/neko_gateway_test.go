@@ -30,7 +30,8 @@ rules:
   - DOMAIN-SUFFIX,youtube.com,VPN
   - MATCH,DIRECT
 sub-rules:
-  calls: [NETWORK,UDP,DIRECT]
+  calls:
+    - NETWORK,UDP,DIRECT
 dns:
   nameserver: [77.88.8.8, "https://1.1.1.1/dns-query#VPN", system]
   proxy-server-nameserver: ["https://1.1.1.1/dns-query", "dhcp://en0"]
