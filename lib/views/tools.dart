@@ -3,6 +3,7 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/neko/brand.dart';
+import 'package:fl_clash/neko/gateway_view.dart';
 import 'package:fl_clash/neko/multipath.dart';
 import 'package:fl_clash/neko/sos_view.dart';
 import 'package:fl_clash/providers/providers.dart';
@@ -82,6 +83,7 @@ class _ToolViewState extends ConsumerState<ToolsView> {
         items: [
           const NekoSosItem(),
           if (system.isAndroid) const NekoMultipathItem(),
+          if (system.isAndroid) const NekoGatewayItem(),
         ],
         footer: system.isAndroid ? nekoMultipathFooter : null,
       ),

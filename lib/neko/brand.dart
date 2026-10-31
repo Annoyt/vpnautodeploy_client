@@ -179,3 +179,67 @@ const _privacyEn =
     'NekoVPN includes no analytics or crash reporting service. QR codes are '
     'read on the device by the open-source zxing-cpp library, with no Google '
     'service.';
+
+String get nekoGatewayTitle =>
+    _isRu ? 'Шлюз для соседа' : 'Gateway for a neighbour';
+
+String get nekoGatewaySubtitle => _isRu
+    ? 'Раздать свой интернет или выйти через соседний телефон'
+    : 'Share your network or go out through a nearby phone';
+
+String get nekoGatewayIntro => _isRu ? _gatewayIntroRu : _gatewayIntroEn;
+
+const _gatewayIntroRu =
+    'Телефон без своего интернета может выходить через этот: по общему '
+    'Wi-Fi или через точку доступа этого телефона. VPN у каждого свой, со '
+    'своим ключом. Этот телефон передаёт зашифрованные соединения соседа и '
+    'не видит, что внутри. Российские сайты сосед открывает через интернет '
+    'этого телефона напрямую.';
+
+const _gatewayIntroEn =
+    'A phone without internet of its own can go out through this one, over '
+    'a shared Wi-Fi or this phone\'s hotspot. Each phone keeps its own VPN '
+    'and key. This phone carries the neighbour\'s encrypted connections and '
+    'does not see inside them. The neighbour opens Russian sites directly '
+    'through this phone\'s internet.';
+
+String get nekoGatewayShareSection =>
+    _isRu ? 'Этот телефон раздаёт' : 'This phone shares';
+
+String get nekoGatewayShare =>
+    _isRu ? 'Раздавать соседу' : 'Share with a neighbour';
+
+String get nekoGatewayShareSubtitle => _isRu
+    ? 'Работает, пока включён VPN. Тратит трафик и заряд этого телефона.'
+    : 'Works while the VPN is on. Uses this phone\'s data and battery.';
+
+String get nekoGatewayShareHint => _isRu
+    ? 'На втором телефоне: NekoVPN → Инструменты → Шлюз для соседа → '
+          'Подключиться, и наведите камеру на код.'
+    : 'On the other phone: NekoVPN → Tools → Gateway for a neighbour → '
+          'Connect, and point the camera at the code.';
+
+String get nekoGatewayNoNetwork => _isRu
+    ? 'Нет сети, к которой может подключиться сосед: включите точку доступа '
+          'или подключитесь к Wi-Fi.'
+    : 'No network a neighbour can join: turn on the hotspot or join a Wi-Fi.';
+
+String get nekoGatewayJoinSection => _isRu
+    ? 'Этот телефон выходит через соседа'
+    : 'This phone goes out '
+          'through a neighbour';
+
+String get nekoGatewayScan => _isRu ? 'Подключиться' : 'Connect';
+
+String get nekoGatewayScanSubtitle => _isRu
+    ? 'Отсканируйте код на телефоне, который раздаёт'
+    : 'Scan the code on the sharing phone';
+
+String get nekoGatewayJoined => _isRu
+    ? 'Весь интернет этого телефона идёт через соседа'
+    : 'All of this phone\'s traffic goes through the neighbour';
+
+String get nekoGatewayLeave => _isRu ? 'Отключиться' : 'Disconnect';
+
+String get nekoGatewayInvalidCode =>
+    _isRu ? 'Это не код шлюза NekoVPN' : 'Not a NekoVPN gateway code';
