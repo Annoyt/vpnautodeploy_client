@@ -1,4 +1,6 @@
 export 'brand.dart';
+export 'gateway.dart';
+export 'gateway_view.dart';
 export 'mirrors.dart';
 export 'multipath.dart';
 export 'profile_update.dart';

@@ -33,7 +33,12 @@ const _previewRevealAwaitingFirstFrame = Interval(
 );
 
 class ScanPage extends ConsumerStatefulWidget {
-  const ScanPage({super.key});
+  const ScanPage({super.key, this.accept, this.invalidHint});
+
+  /// NekoVPN: which codes the page takes, profile links by default; the
+  /// gateway screen takes its own (lib/neko/gateway_view.dart).
+  final String? Function(Iterable<String?> values)? accept;
+  final String? invalidHint;
 
   @override
   ConsumerState<ScanPage> createState() => _ScanPageState();
@@ -156,7 +161,7 @@ class _ScanPageState extends ConsumerState<ScanPage>
     if (_leaving || !mounted || capture.barcodes.isEmpty) {
       return;
     }
-    final url = profileUrlFromQrCodes(
+    final url = (widget.accept ?? profileUrlFromQrCodes)(
       capture.barcodes.map((barcode) => barcode.rawValue),
     );
     if (url == null) {
@@ -419,7 +424,8 @@ class _ScanPageState extends ConsumerState<ScanPage>
               liveRegion: true,
               child: Text(
                 invalid
-                    ? appLocalizations.invalidProfileQrcode
+                    ? widget.invalidHint ??
+                          appLocalizations.invalidProfileQrcode
                     : appLocalizations.qrcodeDesc,
                 textAlign: TextAlign.center,
                 maxLines: _hintMaxLines,
