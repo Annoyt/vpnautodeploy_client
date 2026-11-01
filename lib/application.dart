@@ -10,6 +10,7 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/manager/hotkey_manager.dart';
 import 'package:fl_clash/manager/manager.dart';
+import 'package:fl_clash/neko/network_memory_manager.dart';
 import 'package:fl_clash/plugins/app.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
@@ -34,7 +35,8 @@ Widget buildManagerStack({
     child: CoreManager(
       child: ConnectivityManager(
         onConnectivityChanged: onConnectivityChanged,
-        child: platformApp,
+        // NekoVPN: the cascade remembers its server per network (E31).
+        child: NekoNetworkMemoryManager(child: platformApp),
       ),
     ),
   );

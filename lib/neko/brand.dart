@@ -282,3 +282,13 @@ String get nekoQuotaOut => _isRu
 String get nekoQuotaBuy => _isRu ? 'Купить подписку' : 'Buy a subscription';
 
 String get nekoQuotaRenew => _isRu ? 'Продлить подписку' : 'Renew';
+
+String get nekoNetworkMemoryTitle => _isRu
+    ? 'Помнить сервер для каждой сети'
+    : 'Remember the server per network';
+
+String get nekoNetworkMemorySubtitle => _isRu
+    ? 'В знакомой сети каскад сразу берёт сервер, который работал там в '
+          'прошлый раз'
+    : 'In a known network the cascade starts on the server that worked '
+          'there last time';
