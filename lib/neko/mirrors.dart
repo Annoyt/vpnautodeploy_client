@@ -7,6 +7,8 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:path/path.dart';
 
+import 'quota.dart';
+
 /// The header the NekoVPN bot sends with a profile: this very profile on
 /// each of its mirror domains, comma-separated https URLs.
 const nekoMirrorsHeader = 'nekovpn-mirrors';
@@ -82,9 +84,9 @@ class NekoMirrorStore {
 }
 
 /// Downloads a URL profile from [url] or, when that fails, from the
-/// mirrors its last answer named, in that order. The answer's header
-/// replaces the stored list. When no address answers, the profile's own
-/// error is the one rethrown.
+/// mirrors its last answer named, in that order. The answer's headers
+/// replace the stored mirrors and plan. When no address answers, the
+/// profile's own error is the one rethrown.
 Future<Response<Uint8List>> nekoDownloadProfile(
   int profileId,
   String url, {
@@ -93,6 +95,8 @@ Future<Response<Uint8List>> nekoDownloadProfile(
   final response = await _fromAnyAddress(profileId, url, download);
   final header = response.headers.value(nekoMirrorsHeader);
   await NekoMirrorStore.put(profileId, nekoMirrorsFromHeader(header, url: url));
+  final plan = NekoPlan.fromHeader(response.headers.value(nekoPlanHeader));
+  await NekoPlanStore.put(profileId, plan);
   return response;
 }
 

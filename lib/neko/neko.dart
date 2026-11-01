@@ -4,6 +4,8 @@ export 'gateway_view.dart';
 export 'mirrors.dart';
 export 'multipath.dart';
 export 'profile_update.dart';
+export 'quota.dart';
+export 'quota_view.dart';
 export 'remote_settings.dart';
 export 'sos.dart';
 export 'sos_view.dart';
