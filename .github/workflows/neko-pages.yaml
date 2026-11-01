@@ -21,14 +21,31 @@ permissions:
   pages: write
   id-token: write
 
+# One deployment at a time, and one that started is never cut off (the
+# starter Pages workflow does the same).
 concurrency:
   group: neko-pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
+  # A release event runs on the release's tag, and the github-pages
+  # environment deploys from main only: the rebuild runs on main instead.
+  # workflow_dispatch is one of the two events the job token may start.
+  dispatch:
+    name: Rebuild on main
+    if: github.event_name == 'release' && github.repository == 'Annoyt/vpnautodeploy_client'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Dispatch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run neko-pages.yaml --repo "$GITHUB_REPOSITORY" --ref main
+
   build:
     name: Build
-    if: github.repository == 'Annoyt/vpnautodeploy_client'
+    if: github.event_name != 'release' && github.repository == 'Annoyt/vpnautodeploy_client'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
