@@ -52,6 +52,20 @@ void main() {
       expect(release?.tag, 'v0.9.2-neko.4');
     });
 
+    test('junk assets are passed over', () {
+      final release = nekoSiteLatest([
+        {
+          'tag_name': 'v0.9.2-neko.4',
+          'assets': [
+            'junk',
+            <String, Object?>{'name': null, 'browser_download_url': 'x'},
+            _asset('v0.9.2-neko.4', 'arm64-v8a'),
+          ],
+        },
+      ]);
+      expect(release?.apks.keys, ['arm64-v8a']);
+    });
+
     test('nothing usable is no release', () {
       for (final releases in <Object?>[
         null,
@@ -79,7 +93,10 @@ void main() {
         contains('href="https://github.example/v0.9.2-neko.4/arm64-v8a.apk"'),
       );
       expect(page, contains('Версия 0.9.2-neko.4 · 55 МБ'));
-      expect(page, contains('https://github.example/v0.9.2-neko.4/x86_64.apk'));
+      for (final abi in nekoSiteAbis.skip(1)) {
+        expect(page, contains('https://github.example/v0.9.2-neko.4/$abi.apk'));
+      }
+      expect(page, contains('Демо в NekoVPN — 10 ГБ в месяц'));
       for (final link in [
         'https://hiddify.com/',
         'https://chen08209.github.io/FlClash/#download',
@@ -98,12 +115,16 @@ void main() {
       expect(page, isNot(contains('Версия')));
     });
 
-    test('names are escaped', () {
+    test('links are escaped for a double-quoted attribute, slashes kept', () {
       final page = nekoSitePage((
         tag: 'v0.9.2-neko.4',
-        apks: {'arm64-v8a': (url: 'https://x/a.apk?a=1&b=<2>', size: 1)},
+        apks: {'arm64-v8a': (url: 'https://x/a.apk?a=1&b=<2>"', size: 1)},
       ));
-      expect(page, contains('https://x/a.apk?a=1&amp;b=&lt;2&gt;'));
+      expect(
+        page,
+        contains('href="https://x/a.apk?a=1&amp;b=&lt;2&gt;&quot;"'),
+      );
+      expect(page, isNot(contains('&#47;')));
     });
   });
 

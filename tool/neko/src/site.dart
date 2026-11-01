@@ -54,13 +54,15 @@ NekoSiteRelease? nekoSiteLatest(Object? releases) {
 /// Opens the visitor's own platform; without a script the Android section
 /// is open.
 const nekoSiteScript =
-    "(function(){var u=navigator.userAgent;"
-    "var id=/Android/.test(u)?'android':/iPhone|iPad|iPod/.test(u)?'ios':"
-    "'desktop';var all=document.querySelectorAll('details[id]');"
-    "for(var i=0;i<all.length;i++){all[i].open=all[i].id===id;}})();";
+    '(function(){var u=navigator.userAgent;'
+    'var id=/Android/.test(u)?"android":/iPhone|iPad|iPod/.test(u)?"ios":'
+    '"desktop";var all=document.querySelectorAll("details[id]");'
+    'for(var i=0;i<all.length;i++){all[i].open=all[i].id===id;}})();';
 
 String nekoSitePage(NekoSiteRelease? release) {
-  const e = HtmlEscape();
+  // & < > " like the bot's html.escape; the default mode also turns every
+  // slash of a link into &#47;.
+  const e = HtmlEscape(HtmlEscapeMode.attribute);
   String button(String href, String text) =>
       '<a class="btn" href="${e.convert(href)}">${e.convert(text)}</a>';
   String app(
@@ -125,13 +127,9 @@ String nekoSitePage(NekoSiteRelease? release) {
       app('FlClash', _flclashPcAbout, _flclash, recommended: true),
       app('Hiddify', _hiddifyAbout, _hiddify),
     ]),
-    '<p class="small">Подписку возьмите в боте '
-        '<a href="$nekoSiteBot">@neko_vpnbot</a>: команда /sub. Там же кнопка, '
-        'которая добавляет её в приложение одним касанием.</p>',
-    '<p class="small">Демо в NekoVPN — 10 ГБ в месяц, в других приложениях — '
-        '5 ГБ.</p>',
-    '<p class="small foot">NekoVPN — изменённая версия FlClash (GPL-3.0). '
-        '<a href="$nekoSiteSource">Исходники</a></p>',
+    _botHint,
+    _demoLine,
+    _footer,
   ].join('\n');
   return '''<!doctype html>
 <html lang="ru">
@@ -186,6 +184,16 @@ const _flclashPcAbout =
     'Рекомендуем для компьютера: применяет наши правила полностью.';
 const _karingAbout =
     'Для iPhone и iPad, из App Store. NekoVPN для iPhone пока нет.';
+const _botHint =
+    '<p class="small">Подписку возьмите в боте '
+    '<a href="$nekoSiteBot">@neko_vpnbot</a>: команда /sub. Там же кнопка, '
+    'которая добавляет её в приложение одним касанием.</p>';
+const _demoLine =
+    '<p class="small">Демо в NekoVPN — 10 ГБ в месяц, в других приложениях — '
+    '5 ГБ.</p>';
+const _footer =
+    '<p class="small foot">NekoVPN — изменённая версия FlClash (GPL-3.0). '
+    '<a href="$nekoSiteSource">Исходники</a></p>';
 
 /// The page for a release list as GitHub's API returns it.
 String nekoSitePageFromJson(String releasesJson) {
