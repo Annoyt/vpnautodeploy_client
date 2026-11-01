@@ -3,6 +3,8 @@ export 'gateway.dart';
 export 'gateway_view.dart';
 export 'mirrors.dart';
 export 'multipath.dart';
+export 'network_memory.dart';
+export 'network_memory_manager.dart';
 export 'profile_update.dart';
 export 'quota.dart';
 export 'quota_view.dart';
