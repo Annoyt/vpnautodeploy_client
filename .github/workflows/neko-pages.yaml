@@ -1,0 +1,66 @@
+name: neko-pages
+
+# The app chooser on GitHub Pages (https://annoyt.github.io/vpnautodeploy_client/):
+# a static copy of the bot's /app page without the user's subscription, for
+# when the bot's own domain does not open. Rebuilt when a release is
+# published, so its APK links always name the newest build.
+
+on:
+  release:
+    types: [published]
+  push:
+    branches: [main]
+    paths:
+      - tool/neko/site.dart
+      - tool/neko/src/site.dart
+      - .github/workflows/neko-pages.yaml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: neko-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    if: github.repository == 'Annoyt/vpnautodeploy_client'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api "repos/$GITHUB_REPOSITORY/releases?per_page=20" > "$RUNNER_TEMP/releases.json"
+
+      # Outside the package: the generator imports no package, and the
+      # project's pubspec needs Flutter to resolve.
+      - name: Page
+        working-directory: ${{ runner.temp }}
+        run: dart "$GITHUB_WORKSPACE/tool/neko/site.dart" "$RUNNER_TEMP/releases.json" "$GITHUB_WORKSPACE/_site"
+
+      - name: Upload
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
