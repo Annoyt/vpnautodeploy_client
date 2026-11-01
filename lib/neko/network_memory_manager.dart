@@ -82,6 +82,54 @@ class NekoNetworkMemoryRunner {
   }
 }
 
+/// `ref.read` of a widget or `read` of a container.
+typedef NekoRead = T Function<T>(ProviderListenable<T> provider);
+
+/// Our profile's id while the VPN runs it and memory is on; else null.
+/// Ours = the bot named its plan with the last profile download.
+Future<int?> nekoOurProfileId(NekoRead read) async {
+  if (!read(isStartProvider)) return null;
+  final profile = read(currentProfileProvider);
+  if (profile == null) return null;
+  if (await NekoPlanStore.of(profile.id) == null) return null;
+  if (!await NekoNetworkMemory.enabled()) return null;
+  return profile.id;
+}
+
+/// The runner's hooks wired to the app's providers.
+NekoNetworkMemoryHooks nekoNetworkMemoryHooks(NekoRead read) {
+  return NekoNetworkMemoryHooks(
+    profileId: () => nekoOurProfileId(read),
+    groups: () => read(groupsProvider),
+    delays: () => read(delayDataSourceProvider),
+    changeProxy: (group, proxy) => read(
+      proxiesActionProvider.notifier,
+    ).changeProxy(groupName: group, proxyName: proxy),
+    testGroups: (groups) =>
+        read(proxiesActionProvider.notifier).delayTestGroups(groups),
+    refreshGroups: () => read(proxiesActionProvider.notifier).updateGroups(),
+  );
+}
+
+/// The network the phone is on now, by [nekoNetworkKey].
+Future<String?> nekoCurrentNetwork(
+  NekoRead read,
+  List<ConnectivityResult> results,
+  Future<List<NetworkInterface>> Function() interfaces,
+) async {
+  List<NetworkInterface> list;
+  try {
+    list = await interfaces();
+  } on Exception {
+    list = const [];
+  }
+  return nekoNetworkKey(
+    results,
+    ssid: read(currentSSIDProvider),
+    interfaces: list,
+  );
+}
+
 /// Feeds network changes to a [NekoNetworkMemoryRunner].
 class NekoNetworkMemoryManager extends ConsumerStatefulWidget {
   const NekoNetworkMemoryManager({
@@ -106,19 +154,8 @@ class NekoNetworkMemoryManager extends ConsumerStatefulWidget {
 
 class _NekoNetworkMemoryManagerState
     extends ConsumerState<NekoNetworkMemoryManager> {
-  late final NekoNetworkMemoryRunner _runner = NekoNetworkMemoryRunner(
-    NekoNetworkMemoryHooks(
-      profileId: _ourProfileId,
-      groups: () => ref.read(groupsProvider),
-      delays: () => ref.read(delayDataSourceProvider),
-      changeProxy: (group, proxy) => ref
-          .read(proxiesActionProvider.notifier)
-          .changeProxy(groupName: group, proxyName: proxy),
-      testGroups: (groups) =>
-          ref.read(proxiesActionProvider.notifier).delayTestGroups(groups),
-      refreshGroups: () =>
-          ref.read(proxiesActionProvider.notifier).updateGroups(),
-    ),
+  late final _runner = NekoNetworkMemoryRunner(
+    nekoNetworkMemoryHooks(ref.read),
   );
   StreamSubscription<List<ConnectivityResult>>? _subscription;
   Timer? _timer;
@@ -129,35 +166,18 @@ class _NekoNetworkMemoryManagerState
     final stream =
         widget.connectivityStream ?? Connectivity().onConnectivityChanged;
     _subscription = stream.listen((results) => unawaited(_changed(results)));
-    _timer = Timer.periodic(
-      widget.rememberEvery,
-      (_) => unawaited(_runner.rememberNow()),
-    );
-  }
-
-  Future<int?> _ourProfileId() async {
-    if (!mounted || !ref.read(isStartProvider)) return null;
-    final profile = ref.read(currentProfileProvider);
-    if (profile == null) return null;
-    if (await NekoPlanStore.of(profile.id) == null) return null;
-    if (!await NekoNetworkMemory.enabled()) return null;
-    return profile.id;
+    _timer = Timer.periodic(widget.rememberEvery, (_) {
+      if (mounted) unawaited(_runner.rememberNow());
+    });
   }
 
   Future<void> _changed(List<ConnectivityResult> results) async {
-    List<NetworkInterface> interfaces;
-    try {
-      interfaces = await (widget.interfaces ?? NetworkInterface.list)();
-    } on Exception {
-      interfaces = const [];
-    }
-    if (!mounted) return;
-    final network = nekoNetworkKey(
+    final network = await nekoCurrentNetwork(
+      ref.read,
       results,
-      ssid: ref.read(currentSSIDProvider),
-      interfaces: interfaces,
+      widget.interfaces ?? NetworkInterface.list,
     );
-    await _runner.arrive(network);
+    if (mounted) await _runner.arrive(network);
   }
 
   @override

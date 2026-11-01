@@ -6,6 +6,9 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/neko/network_memory.dart';
 import 'package:fl_clash/neko/network_memory_manager.dart';
+import 'package:fl_clash/neko/quota.dart';
+import 'package:fl_clash/providers/providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/app_paths.dart';
@@ -49,6 +52,23 @@ class _Interface implements NetworkInterface {
 }
 
 const _url = 'https://www.gstatic.com/generate_204';
+
+class _FakeProxies extends ProxiesAction {
+  static final calls = <String>[];
+
+  @override
+  Future<void> changeProxy({
+    required String groupName,
+    required String proxyName,
+  }) async => calls.add('pin $groupName $proxyName');
+
+  @override
+  Future<void> delayTestGroups(List<Group> groups) async =>
+      calls.add('test ${groups.map((group) => group.name).join(',')}');
+
+  @override
+  Future<void> updateGroups() async => calls.add('refresh');
+}
 
 Group _group(
   String name,
@@ -251,6 +271,83 @@ void main() {
       groups = [_group('Cascade', GroupType.Fallback, 'hy2')];
       await memory.rememberNow();
       expect(await NekoNetworkMemory.of(7, 'mobile'), {'Cascade': 'hy2'});
+    });
+  });
+
+  group('wired to the app', () {
+    final profile = Profile.normal(url: 'https://main.example/sub/t');
+
+    ProviderContainer container({bool start = true, Profile? current}) {
+      final container = ProviderContainer(
+        overrides: [
+          isStartProvider.overrideWithValue(start),
+          currentProfileProvider.overrideWithValue(current),
+          groupsProvider.overrideWithValue([
+            _group('Cascade', GroupType.Fallback, 'reality'),
+          ]),
+          delayDataSourceProvider.overrideWithBuild(
+            (_, _) => {
+              _url: {'reality': 60},
+            },
+          ),
+          proxiesActionProvider.overrideWith(_FakeProxies.new),
+        ],
+      );
+      addTearDown(container.dispose);
+      return container;
+    }
+
+    setUp(_FakeProxies.calls.clear);
+
+    test('our profile only, with the VPN on and memory on', () async {
+      expect(
+        await nekoOurProfileId(container(start: false, current: profile).read),
+        isNull,
+      );
+      expect(await nekoOurProfileId(container().read), isNull);
+      expect(
+        await nekoOurProfileId(container(current: profile).read),
+        isNull,
+        reason: 'no plan: not our profile',
+      );
+      await NekoPlanStore.put(profile.id, const NekoPlan(paid: true));
+      expect(
+        await nekoOurProfileId(container(current: profile).read),
+        profile.id,
+      );
+      await NekoNetworkMemory.setEnabled(false);
+      expect(await nekoOurProfileId(container(current: profile).read), isNull);
+    });
+
+    test('the hooks reach the providers and the proxies action', () async {
+      final hooks = nekoNetworkMemoryHooks(container(current: profile).read);
+      expect(hooks.groups().single.name, 'Cascade');
+      expect(hooks.delays()[_url], {'reality': 60});
+      await hooks.changeProxy('Cascade', 'hy2');
+      await hooks.testGroups(hooks.groups());
+      await hooks.refreshGroups();
+      expect(_FakeProxies.calls, [
+        'pin Cascade hy2',
+        'test Cascade',
+        'refresh',
+      ]);
+      expect(await hooks.profileId(), isNull);
+    });
+
+    test('the current network, also when the device lists nothing', () async {
+      final read = container().read;
+      expect(
+        await nekoCurrentNetwork(read, [
+          ConnectivityResult.mobile,
+        ], () async => []),
+        'mobile',
+      );
+      expect(
+        await nekoCurrentNetwork(read, [
+          ConnectivityResult.wifi,
+        ], () async => throw const SocketException('denied')),
+        'wifi',
+      );
     });
   });
 }
