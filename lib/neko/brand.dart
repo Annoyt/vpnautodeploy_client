@@ -243,3 +243,42 @@ String get nekoGatewayLeave => _isRu ? 'Отключиться' : 'Disconnect';
 
 String get nekoGatewayInvalidCode =>
     _isRu ? 'Это не код шлюза NekoVPN' : 'Not a NekoVPN gateway code';
+
+String get nekoQuotaTitle => _isRu ? 'Трафик NekoVPN' : 'NekoVPN traffic';
+
+String nekoQuotaDemo(int app, int other) => _isRu
+    ? 'Демо: $app ГБ в месяц, потому что вы в NekoVPN. В других приложениях '
+          '$other ГБ.'
+    : 'Demo: $app GB a month, because you use NekoVPN. In other apps, '
+          '$other GB.';
+
+String nekoQuotaGrowing(int app) => _isRu
+    ? 'Лимит вырастет до $app ГБ при следующем обновлении профиля.'
+    : 'The allowance grows to $app GB at the next profile update.';
+
+String nekoQuotaPaid(String date) =>
+    _isRu ? 'Подписка до $date.' : 'Paid until $date.';
+
+String nekoQuotaExpired(String date) =>
+    _isRu ? 'Подписка закончилась $date.' : 'The subscription ended on $date.';
+
+String get nekoQuotaRule => _isRu
+    ? 'Учитывается ТОЛЬКО трафик вне РФ: российские сайты открываются '
+          'напрямую и в лимит не входят.'
+    : 'ONLY traffic outside Russia counts: Russian sites open directly and do '
+          'not count.';
+
+String get nekoQuotaReset =>
+    _isRu ? 'Счётчик обнуляется 1-го числа.' : 'The counter resets on the 1st.';
+
+String nekoQuotaHigh(int percent) => _isRu
+    ? 'Использовано $percent% месячного трафика.'
+    : 'You have used $percent% of this month\'s traffic.';
+
+String get nekoQuotaOut => _isRu
+    ? 'Трафик на этот месяц закончился, до 1-го числа.'
+    : 'This month\'s traffic is used up until the 1st.';
+
+String get nekoQuotaBuy => _isRu ? 'Купить подписку' : 'Buy a subscription';
+
+String get nekoQuotaRenew => _isRu ? 'Продлить подписку' : 'Renew';

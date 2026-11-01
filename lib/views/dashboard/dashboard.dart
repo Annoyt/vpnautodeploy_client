@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/core.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/neko/quota_view.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/ui/icons/icons.dart';
 import 'package:fl_clash/widgets/widgets.dart';
@@ -339,13 +340,20 @@ class _MobileDashboard extends ConsumerWidget {
               // ones it has; cards this uneven move the scroll end as it goes.
               sliver: SliverToBoxAdapter(
                 child: Column(
-                  spacing: gap,
                   children: [
-                    for (final widget in widgets)
-                      RepaintBoundary(
-                        key: cardKeyOf(widget),
-                        child: widget.card,
-                      ),
+                    // NekoVPN: the key's month, above the cards when the
+                    // profile is ours (lib/neko/quota_view.dart).
+                    NekoQuotaBanner(gap: gap),
+                    Column(
+                      spacing: gap,
+                      children: [
+                        for (final widget in widgets)
+                          RepaintBoundary(
+                            key: cardKeyOf(widget),
+                            child: widget.card,
+                          ),
+                      ],
+                    ),
                   ],
                 ),
               ),
