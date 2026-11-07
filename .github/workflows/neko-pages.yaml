@@ -1,0 +1,83 @@
+name: neko-pages
+
+# The app chooser on GitHub Pages (https://annoyt.github.io/vpnautodeploy_client/):
+# a static copy of the bot's /app page without the user's subscription, for
+# when the bot's own domain does not open. Rebuilt when a release is
+# published, so its APK links always name the newest build.
+
+on:
+  release:
+    types: [published]
+  push:
+    branches: [main]
+    paths:
+      - tool/neko/site.dart
+      - tool/neko/src/site.dart
+      - .github/workflows/neko-pages.yaml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time, and one that started is never cut off (the
+# starter Pages workflow does the same).
+concurrency:
+  group: neko-pages
+  cancel-in-progress: false
+
+jobs:
+  # A release event runs on the release's tag, and the github-pages
+  # environment deploys from main only: the rebuild runs on main instead.
+  # workflow_dispatch is one of the two events the job token may start.
+  dispatch:
+    name: Rebuild on main
+    if: github.event_name == 'release' && github.repository == 'Annoyt/vpnautodeploy_client'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Dispatch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run neko-pages.yaml --repo "$GITHUB_REPOSITORY" --ref main
+
+  build:
+    name: Build
+    if: github.event_name != 'release' && github.repository == 'Annoyt/vpnautodeploy_client'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api "repos/$GITHUB_REPOSITORY/releases?per_page=20" > "$RUNNER_TEMP/releases.json"
+
+      # Outside the package: the generator imports no package, and the
+      # project's pubspec needs Flutter to resolve.
+      - name: Page
+        working-directory: ${{ runner.temp }}
+        run: dart "$GITHUB_WORKSPACE/tool/neko/site.dart" "$RUNNER_TEMP/releases.json" "$GITHUB_WORKSPACE/_site"
+
+      - name: Upload
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
