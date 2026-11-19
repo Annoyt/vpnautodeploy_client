@@ -125,6 +125,7 @@ func loadConfig(path string) (*config.Config, error) {
 		return nil, err
 	}
 	patchNekoGateway(raw, readNekoGateway())
+	patchNekoServerFirst(raw)
 	cfg, err := config.ParseRawConfig(raw)
 	if err != nil {
 		return nil, err
