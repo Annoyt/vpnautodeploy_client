@@ -58,7 +58,7 @@ const (
 	nekoSocksVersion       = 0x05
 	nekoSocksNoAuth        = 0x00
 	nekoSocksNoAcceptable  = 0xff
-	nekoSocksConnect       = 0x01
+	nekoSocksCmdConnect    = 0x01
 	nekoSocksAddressIPv4   = 0x01
 	nekoSocksAddressDomain = 0x03
 	nekoSocksAddressIPv6   = 0x04
@@ -332,7 +332,7 @@ func nekoSocksRequest(conn net.Conn) (string, int, error) {
 	if _, err := io.ReadFull(conn, port); err != nil {
 		return "", 0, err
 	}
-	if request[1] != nekoSocksConnect {
+	if request[1] != nekoSocksCmdConnect {
 		return "", 0, nekoSocksError(nekoSocksNoCommand)
 	}
 	return host, int(port[0])<<8 | int(port[1]), nil
