@@ -13,6 +13,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/neko/brand.dart';
 import 'package:fl_clash/neko/bypass.dart';
 import 'package:fl_clash/neko/remote_settings.dart';
+import 'package:fl_clash/neko/secure_proxy.dart';
 import 'package:fl_clash/neko/update.dart';
 import 'package:fl_clash/plugins/app.dart';
 import 'package:fl_clash/plugins/service.dart';

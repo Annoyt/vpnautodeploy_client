@@ -138,6 +138,22 @@ class CommonAction extends _$CommonAction {
     await NekoSettingsStore.markShown(message.id);
   }
 
+  /// NekoVPN locks the local proxy against other apps, once per install
+  /// (lib/neko/secure_proxy.dart).
+  Future<void> secureNekoProxy() async {
+    await nekoApplySecureProxy(
+      android: system.isAndroid,
+      read: () => (
+        vpn: ref.read(vpnSettingProvider),
+        network: ref.read(networkSettingProvider),
+      ),
+      write: (settings) {
+        ref.read(vpnSettingProvider.notifier).value = settings.vpn;
+        ref.read(networkSettingProvider.notifier).value = settings.network;
+      },
+    );
+  }
+
   Future<void> applyNekoBypass(List<String> list) async {
     if (!system.isAndroid) return;
     await nekoApplyBypass(
