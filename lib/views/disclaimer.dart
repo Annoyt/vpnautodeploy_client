@@ -1,6 +1,7 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/neko/brand.dart';
+import 'package:fl_clash/neko/consent.dart';
 import 'package:fl_clash/neko/layout.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/ui/icons/icons.dart';
@@ -274,7 +275,10 @@ class _ConsentLayout extends StatelessWidget {
     return Column(
       children: [
         Expanded(child: child),
-        _ConsentBar(maxWidth: maxWidth, gutter: gutter, compact: compact),
+        if (nekoLayout)
+          NekoConsentBar(maxWidth: maxWidth, gutter: gutter, compact: compact)
+        else
+          _ConsentBar(maxWidth: maxWidth, gutter: gutter, compact: compact),
       ],
     );
   }
@@ -466,9 +470,8 @@ class _RestateDialogState extends State<_RestateDialog> {
   Widget build(BuildContext context) {
     final appLocalizations = context.appLocalizations;
     final statement = appLocalizations.disclaimerNoServiceStatement;
-    // Typing the statement out takes hundreds of presses on a remote, and
-    // NekoVPN's phone layout asks for the same tick (the owner's board).
-    if (RemoteFocusAdapter.isEnabledOf(context) || nekoLayout) {
+    // Typing the statement out takes hundreds of presses on a remote.
+    if (RemoteFocusAdapter.isEnabledOf(context)) {
       return _buildDialog(
         title: appLocalizations.disclaimerAcknowledgeTitle,
         tip: appLocalizations.disclaimerAcknowledgeTip,
