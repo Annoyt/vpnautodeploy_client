@@ -169,6 +169,7 @@ class Bootstrap {
     unawaited(
       _container.read(commonActionProvider.notifier).checkNekoSettings(),
     );
+    unawaited(_container.read(commonActionProvider.notifier).secureNekoProxy());
     unawaited(
       autoLaunch?.updateStatus(_container.read(appSettingProvider).autoLaunch),
     );
