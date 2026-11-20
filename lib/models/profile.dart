@@ -186,11 +186,7 @@ extension ProfileExtension on Profile {
   }
 
   Future<Profile> update({required ValidateConfig validate}) async {
-    final response = await nekoDownloadProfile(
-      id,
-      url,
-      download: request.getFileResponseForUrl,
-    );
+    final response = await nekoDownloadProfile(id, url);
     return withSubscriptionHeaders(response.headers).saveFile(
       decompressUnlabeled(response.data ?? Uint8List(0)),
       validate: validate,
