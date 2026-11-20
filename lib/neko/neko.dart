@@ -1,4 +1,6 @@
 export 'brand.dart';
+export 'bypass.dart';
+export 'consent.dart';
 export 'gateway.dart';
 export 'gateway_view.dart';
 export 'home.dart';
@@ -6,6 +8,9 @@ export 'layout.dart';
 export 'links.dart';
 export 'mirrors.dart';
 export 'multipath.dart';
+export 'netstat.dart';
+export 'netstat_manager.dart';
+export 'netstat_view.dart';
 export 'network_memory.dart';
 export 'network_memory_manager.dart';
 export 'profile_update.dart';

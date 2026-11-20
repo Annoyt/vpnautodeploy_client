@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:fl_clash/neko/netstat.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 String _read(String path) => File(path).readAsStringSync();
@@ -57,5 +58,29 @@ void main() {
     final manifest = _read('android/app/src/main/AndroidManifest.xml');
     expect(manifest, contains('android:scheme="nekovpn"'));
     expect(manifest, isNot(contains('android:scheme="flclash"')));
+  });
+
+  test('network diagnostics: location while in use, never always', () {
+    final app = _read('android/app/src/main/AndroidManifest.xml');
+    final service = _read('android/service/src/main/AndroidManifest.xml');
+    const plugins = 'android/app/src/main/kotlin/com/follow/clash/plugins';
+    final plugin = _read('$plugins/NekoNetstatPlugin.kt');
+    expect(app, contains('android.permission.ACCESS_FINE_LOCATION'));
+    expect(app, contains('android.permission.ACCESS_COARSE_LOCATION'));
+    expect(service, contains('FOREGROUND_SERVICE_LOCATION'));
+    expect(service, contains('foregroundServiceType="specialUse|location"'));
+    for (final source in [app, service, plugin]) {
+      expect(source, isNot(contains('ACCESS_BACKGROUND_LOCATION')));
+    }
+  });
+
+  test('network diagnostics: the channel and the switch file match', () {
+    const service = 'android/service/src/main/java/com/follow/clash/service';
+    const plugins = 'android/app/src/main/kotlin/com/follow/clash/plugins';
+    expect(_read('$plugins/NekoNetstatPlugin.kt'), contains('/neko_netstat"'));
+    expect(
+      _read('$service/modules/NekoForeground.kt'),
+      contains('"$nekoNetstatCellFile"'),
+    );
   });
 }

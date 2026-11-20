@@ -13,6 +13,7 @@ import 'package:material_ui/material_ui.dart';
 import 'brand.dart';
 import 'gateway_view.dart';
 import 'multipath.dart';
+import 'netstat_view.dart';
 import 'network_memory_manager.dart';
 import 'view_mode.dart';
 
@@ -25,8 +26,11 @@ List<Widget> nekoSettingsSections({
 }) {
   return [
     if (advanced)
-      // TODO(neko/netstat): NekoNetstatItem, «Помогать искать блокировки».
-      generateSection(title: nekoNetstatSection, items: const []),
+      generateSection(
+        title: nekoNetstatSection,
+        items: const [NekoNetstatItem()],
+        footer: nekoNetstatFooter,
+      ),
     generateSection(
       title: nekoBasicSection,
       items: [...basic, const NekoBypassAppsItem(), ..._startupItems()],

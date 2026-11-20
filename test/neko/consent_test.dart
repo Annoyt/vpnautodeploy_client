@@ -31,13 +31,15 @@ Future<void> _pumpPhone(WidgetTester tester, [Size size = _phone]) async {
   await tester.pump();
 }
 
-FilledButton _agree(WidgetTester tester) {
-  return tester.widget<FilledButton>(
+Iterable<FilledButton> _agree(WidgetTester tester) {
+  final buttons = tester.widgetList<FilledButton>(
     find.descendant(
       of: find.byType(NekoConsentBar),
       matching: find.byType(FilledButton),
     ),
   );
+  expect(buttons, isNotEmpty);
+  return buttons;
 }
 
 bool _hittable(WidgetTester tester, Finder finder) {
@@ -57,11 +59,11 @@ void main() {
     final tick = find.text(l10n.disclaimerAcknowledgeLabel);
     expect(tick, findsOneWidget);
     expect(_hittable(tester, tick), isTrue);
-    expect(_agree(tester).onPressed, isNull);
+    expect(_agree(tester).every((button) => button.onPressed == null), isTrue);
 
     await tester.tap(tick);
     await tester.pump();
-    expect(_agree(tester).onPressed, isNotNull);
+    expect(_agree(tester).any((button) => button.onPressed != null), isTrue);
     await tester.tap(find.text(l10n.agree));
     await tester.pumpAndSettle();
     expect(find.text(l10n.disclaimerAcknowledgeTitle), findsNothing);

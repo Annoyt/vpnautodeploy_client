@@ -10,6 +10,7 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/manager/hotkey_manager.dart';
 import 'package:fl_clash/manager/manager.dart';
+import 'package:fl_clash/neko/netstat_manager.dart';
 import 'package:fl_clash/neko/network_memory_manager.dart';
 import 'package:fl_clash/plugins/app.dart';
 import 'package:fl_clash/providers/providers.dart';
@@ -30,7 +31,8 @@ Widget buildManagerStack({
 }) {
   final platformApp = isDesktop
       ? WindowHeaderContainer(child: child)
-      : VpnManager(child: child);
+      // NekoVPN: where the VPN is cut, for the service (neko.6, C3).
+      : VpnManager(child: NekoNetstatManager(child: child));
   final state = AppStateManager(
     child: CoreManager(
       child: ConnectivityManager(
