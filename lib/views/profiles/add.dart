@@ -22,7 +22,7 @@ class AddProfileMenu extends ConsumerWidget {
     unawaited(ref.read(profilesActionProvider.notifier).addProfileFormFile());
   }
 
-  Future<void> _toScan(BuildContext context, WidgetRef ref) async {
+  static Future<void> scan(BuildContext context, WidgetRef ref) async {
     final profilesAction = ref.read(profilesActionProvider.notifier);
     if (system.isDesktop) {
       unawaited(profilesAction.addProfileFormQrCode());
@@ -40,7 +40,7 @@ class AddProfileMenu extends ConsumerWidget {
     });
   }
 
-  Future<void> _toAdd(BuildContext context, WidgetRef ref) async {
+  static Future<void> addByLink(BuildContext context, WidgetRef ref) async {
     final profilesAction = ref.read(profilesActionProvider.notifier);
     final appLocalizations = context.appLocalizations;
     final res = await showNamedUrlsForm(
@@ -137,7 +137,7 @@ class AddProfileMenu extends ConsumerWidget {
           CommonPopupMenuItem(
             glyph: AppGlyphs.qrCode,
             label: appLocalizations.qrcode,
-            onPressed: () => _toScan(context, ref),
+            onPressed: () => scan(context, ref),
           ),
           CommonPopupMenuItem(
             glyph: AppGlyphs.importFile,
@@ -147,7 +147,7 @@ class AddProfileMenu extends ConsumerWidget {
           CommonPopupMenuItem(
             glyph: AppGlyphs.cloudDownload,
             label: appLocalizations.link,
-            onPressed: () => _toAdd(context, ref),
+            onPressed: () => addByLink(context, ref),
           ),
           if (system.isTV)
             CommonPopupMenuItem(
