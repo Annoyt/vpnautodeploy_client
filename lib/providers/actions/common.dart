@@ -99,12 +99,20 @@ class CommonAction extends _$CommonAction {
   }
 
   /// NekoVPN's signed remote settings (lib/neko/remote_settings.dart): keeps
-  /// a newer document, then asks for an update or shows the message.
+  /// a newer document, then asks for an update or shows the message. The
+  /// apps the settings keep out of the VPN are applied from the kept
+  /// document first, before the network is asked, and again when a newer
+  /// document arrives.
   Future<void> checkNekoSettings() async {
+    final kept = await NekoSettingsStore.current();
+    if (kept != null) await applyNekoBypass(kept.bypassApps);
     final settings = await nekoRefreshSettings(
       get: (url) => nekoGetJson(request.dio, url),
     );
     if (settings == null) return;
+    if (settings.version != kept?.version) {
+      await applyNekoBypass(settings.bypassApps);
+    }
     final installed = globalState.packageInfo.version;
     if (nekoUpdateRequired(settings, installed: installed)) {
       final update = await dialogs.showMessage(
@@ -131,6 +139,19 @@ class CommonAction extends _$CommonAction {
       if (open == true) unawaited(launchUrl(Uri.parse(url)));
     }
     await NekoSettingsStore.markShown(message.id);
+  }
+
+  /// Keeps the apps of [list] out of the VPN (lib/neko/bypass.dart). Android
+  /// only: access control is the Android VPN's.
+  Future<void> applyNekoBypass(List<String> list) async {
+    if (!system.isAndroid) return;
+    await nekoApplyBypass(
+      list: list,
+      read: () => ref.read(vpnSettingProvider).accessControlProps,
+      write: (access) => ref
+          .read(vpnSettingProvider.notifier)
+          .update((state) => state.copyWith(accessControlProps: access)),
+    );
   }
 
   TextSpan _releaseSpan(BuildContext context, String tagName, String? body) {

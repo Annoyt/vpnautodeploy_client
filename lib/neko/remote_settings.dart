@@ -25,6 +25,12 @@ const _settingsPath = '/neko/settings';
 const _timeout = Duration(seconds: 20);
 final _version = RegExp(r'^\d+\.\d+\.\d+-neko\.\d+$');
 final _origin = RegExp(r'^https://[^/\s]+$');
+final _package = RegExp(r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$');
+final _mailbox = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
+/// At most this many apps kept out of the VPN by the settings, like the bot's
+/// scripts/neko_settings.py allows.
+const nekoBypassAppsLimit = 300;
 
 /// An announcement the service wants every user to read once.
 class NekoMessage {
@@ -50,6 +56,8 @@ class NekoSettings {
     this.minVersion,
     this.message,
     this.flags = const {},
+    this.bypassApps = const [],
+    this.mail,
   });
 
   final int version;
@@ -57,6 +65,17 @@ class NekoSettings {
   final String? minVersion;
   final NekoMessage? message;
   final Map<String, Object> flags;
+
+  /// Android packages that stay out of the VPN by default: the services on
+  /// Russia's white lists (lib/neko/bypass.dart).
+  final List<String> bypassApps;
+
+  /// The service's mailbox for «Запросить письмом» and «Напишите письмом».
+  final String? mail;
+
+  /// Whether the app sends its network diagnostics; on unless the service
+  /// turns it off with the flag `netstat: false`.
+  bool get netstat => flags['netstat'] != false;
 
   /// Null for a document this app cannot use: another schema, a version
   /// that is not a positive number, no https endpoint.
@@ -72,12 +91,27 @@ class NekoSettings {
       minVersion: _minVersion(doc['min_version']),
       message: _message(doc['message']),
       flags: _flags(doc['flags']),
+      bypassApps: _packages(doc['bypass_apps']),
+      mail: _mail(doc['mail']),
     );
   }
 }
 
 Iterable<String> _strings(Object? raw) {
   return raw is List ? raw.whereType<String>() : const [];
+}
+
+/// Package names only, each once, at most [nekoBypassAppsLimit].
+List<String> _packages(Object? raw) {
+  final seen = <String>{};
+  return _strings(raw)
+      .where((name) => _package.hasMatch(name) && seen.add(name))
+      .take(nekoBypassAppsLimit)
+      .toList();
+}
+
+String? _mail(Object? raw) {
+  return raw is String && _mailbox.hasMatch(raw) ? raw : null;
 }
 
 String? _minVersion(Object? raw) {

@@ -1,4 +1,5 @@
 export 'brand.dart';
+export 'bypass.dart';
 export 'gateway.dart';
 export 'gateway_view.dart';
 export 'mirrors.dart';

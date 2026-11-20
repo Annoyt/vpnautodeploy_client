@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/neko/bypass.dart';
 import 'package:fl_clash/plugins/app.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
@@ -186,6 +187,17 @@ class _AccessViewState extends ConsumerState<AccessView>
     }
   }
 
+  Set<String> _viewPackageNames(AccessControlProps accessControl) {
+    return ref
+        .read(packagesProvider)
+        .whereVisible(
+          isFilterSystemApp: accessControl.isFilterSystemApp,
+          isFilterNonInternetApp: accessControl.isFilterNonInternetApp,
+        )
+        .map((item) => item.packageName)
+        .toSet();
+  }
+
   AccessControlProps _getRealAccessControlProps(
     AccessControlProps accessControl,
   ) {
@@ -193,13 +205,7 @@ class _AccessViewState extends ConsumerState<AccessView>
     if (packages.isEmpty) {
       return accessControl;
     }
-    final viewPackageNames = packages
-        .whereVisible(
-          isFilterSystemApp: accessControl.isFilterSystemApp,
-          isFilterNonInternetApp: accessControl.isFilterNonInternetApp,
-        )
-        .map((item) => item.packageName)
-        .toSet();
+    final viewPackageNames = _viewPackageNames(accessControl);
     return accessControl.copyWithNewList(
       accessControl.currentList
           .where((item) => viewPackageNames.contains(item))
@@ -210,13 +216,15 @@ class _AccessViewState extends ConsumerState<AccessView>
 
   void _handleSave() {
     final accessControl = ref.read(accessControlStateProvider);
+    final saved = _getRealAccessControlProps(accessControl);
     ref
         .read(vpnSettingProvider.notifier)
-        .update(
-          (state) => state.copyWith(
-            accessControlProps: _getRealAccessControlProps(accessControl),
-          ),
-        );
+        .update((state) => state.copyWith(accessControlProps: saved));
+    // NekoVPN: an app of the white-list exclusions that the user took back
+    // into the VPN stays there (lib/neko/bypass.dart).
+    unawaited(
+      nekoRecordBypassSave(access: saved, visible: _viewPackageNames(saved)),
+    );
   }
 
   Future<void> _exportToClipboard() async {
