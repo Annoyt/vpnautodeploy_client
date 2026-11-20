@@ -319,10 +319,10 @@ class _PlanSide extends StatelessWidget {
             style: DashboardText.figure(context, AppTextStyle.headline),
           ),
           const SizedBox(height: 8),
-          LinearProgressIndicator(
-            value: summary.share.clamp(0.0, 1.0),
-            color: summary.warn ? colors.warn : context.colorScheme.primary,
-            backgroundColor: colors.tone2,
+          NekoShareBar(
+            value: summary.share,
+            fill: summary.warn ? colors.warn : context.colorScheme.primary,
+            track: colors.tone2,
           ),
         ],
         if (warning != null) ...[

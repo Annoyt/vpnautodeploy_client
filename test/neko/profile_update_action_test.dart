@@ -3,9 +3,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:fl_clash/common/app_localizations.dart';
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/core/interface.dart';
-import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/neko/mirrors.dart';
 import 'package:fl_clash/providers/action.dart';
@@ -59,7 +59,7 @@ void main() {
   late ProviderContainer container;
 
   setUpAll(() async {
-    await AppLocalizations.load(const Locale('en'));
+    loadAppLocalizations(const Locale('en'));
     home = Directory.systemTemp.createTempSync('neko-profile-update-');
     await useAppPaths(home);
   });

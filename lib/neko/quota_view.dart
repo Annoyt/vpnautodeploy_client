@@ -89,10 +89,10 @@ class NekoQuotaCard extends StatelessWidget {
             style: AppTextStyle.title3.of(context, emphasized: true),
           ),
           const SizedBox(height: 8),
-          LinearProgressIndicator(
-            value: quota.share.clamp(0.0, 1.0),
-            color: warn ? colors.warn : context.colorScheme.primary,
-            backgroundColor: colors.tone2,
+          NekoShareBar(
+            value: quota.share,
+            fill: warn ? colors.warn : context.colorScheme.primary,
+            track: colors.tone2,
           ),
           if (warning != null) ...[
             const SizedBox(height: 8),
@@ -172,6 +172,40 @@ class _NekoQuotaBannerState extends ConsumerState<NekoQuotaBanner> {
           child: NekoQuotaCard(quota: quota, now: DateTime.now()),
         );
       },
+    );
+  }
+}
+
+/// prism_ui's progress bar fills only in the primary color, never a warning.
+class NekoShareBar extends StatelessWidget {
+  const NekoShareBar({
+    super.key,
+    required this.value,
+    required this.fill,
+    required this.track,
+  });
+
+  final double value;
+  final Color fill;
+  final Color track;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 4,
+      child: DecoratedBox(
+        decoration: ShapeDecoration(color: track, shape: AppShape.full),
+        child: Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: FractionallySizedBox(
+            widthFactor: value.clamp(0.0, 1.0),
+            heightFactor: 1,
+            child: DecoratedBox(
+              decoration: ShapeDecoration(color: fill, shape: AppShape.full),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

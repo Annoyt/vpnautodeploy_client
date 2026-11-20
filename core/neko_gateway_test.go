@@ -257,7 +257,7 @@ func TestLoadSetupConfigOpensTheGatewayListener(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cfg, err := loadSetupConfig(defaultSetupParams())
+	cfg, err := loadSetupConfig(&SetupParams{})
 
 	if err != nil {
 		t.Fatalf("loadSetupConfig = %v", err)
@@ -276,7 +276,7 @@ func TestLoadSetupConfigJoinsTheGateway(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cfg, err := loadSetupConfig(defaultSetupParams())
+	cfg, err := loadSetupConfig(&SetupParams{})
 
 	if err != nil {
 		t.Fatalf("loadSetupConfig = %v", err)

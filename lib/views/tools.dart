@@ -85,7 +85,6 @@ class _ToolViewState extends ConsumerState<ToolsView> {
 
   /// NekoVPN's Settings: everything below comes back in its advanced view.
   List<Widget> _getNekoList(NekoView view, Widget moreTools, bool developer) {
-    final appLocalizations = context.appLocalizations;
     return nekoSettingsSections(
       advanced: view == NekoView.advanced,
       basic: const [_LocaleItem(), _ThemeItem()],
@@ -94,14 +93,9 @@ class _ToolViewState extends ConsumerState<ToolsView> {
           items: [
             const _GeneralItem(),
             const _AdvancedConfigItem(),
-            const _CustomResourcesItem(),
             const _BackupItem(),
             if (system.isDesktop) const _HotkeyItem(),
           ],
-          footer: [
-            appLocalizations.advancedConfigDesc,
-            appLocalizations.customProfileResourcesDesc,
-          ].join('\n'),
         ),
         moreTools,
         generateSection(

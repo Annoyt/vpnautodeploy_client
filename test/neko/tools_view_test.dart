@@ -85,10 +85,8 @@ void main() {
       nekoGatewayTitle,
       l10n.general,
       l10n.advancedConfig,
-      l10n.customProfileResources,
       l10n.backupAndRestore,
       PageLabel.requests.label,
-      PageLabel.connections.label,
       l10n.disclaimer,
     ], findsOneWidget);
     _expectTexts([nekoSosTitle, l10n.accessControl], findsNothing);

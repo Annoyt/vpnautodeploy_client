@@ -1,6 +1,5 @@
 import 'package:fl_clash/neko/brand.dart';
 import 'package:fl_clash/neko/netstat_view.dart';
-import 'package:fl_clash/ui/switch.dart';
 import 'package:fl_clash/ui/ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
