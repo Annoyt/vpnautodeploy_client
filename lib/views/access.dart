@@ -220,8 +220,6 @@ class _AccessViewState extends ConsumerState<AccessView>
     ref
         .read(vpnSettingProvider.notifier)
         .update((state) => state.copyWith(accessControlProps: saved));
-    // NekoVPN: an app of the white-list exclusions that the user took back
-    // into the VPN stays there (lib/neko/bypass.dart).
     unawaited(
       nekoRecordBypassSave(access: saved, visible: _viewPackageNames(saved)),
     );

@@ -99,10 +99,7 @@ class CommonAction extends _$CommonAction {
   }
 
   /// NekoVPN's signed remote settings (lib/neko/remote_settings.dart): keeps
-  /// a newer document, then asks for an update or shows the message. The
-  /// apps the settings keep out of the VPN are applied from the kept
-  /// document first, before the network is asked, and again when a newer
-  /// document arrives.
+  /// a newer document, then asks for an update or shows the message.
   Future<void> checkNekoSettings() async {
     final kept = await NekoSettingsStore.current();
     if (kept != null) await applyNekoBypass(kept.bypassApps);
@@ -141,8 +138,6 @@ class CommonAction extends _$CommonAction {
     await NekoSettingsStore.markShown(message.id);
   }
 
-  /// Keeps the apps of [list] out of the VPN (lib/neko/bypass.dart). Android
-  /// only: access control is the Android VPN's.
   Future<void> applyNekoBypass(List<String> list) async {
     if (!system.isAndroid) return;
     await nekoApplyBypass(

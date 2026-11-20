@@ -6,16 +6,8 @@ import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:path/path.dart';
 
-/// Apps that stay out of the VPN by default: the services on Russia's white
-/// lists. Their traffic keeps the phone's own connection, so they never see
-/// the service's servers and do not break on a foreign address. The list
-/// comes in the signed remote settings (`bypass_apps`) and goes into
-/// «Приложения без VPN», upstream's access control in reject mode.
-///
-/// NekoVPN remembers what it put there. An app the user took back into the
-/// VPN stays in the VPN. An app the list drops leaves the exclusions only if
-/// NekoVPN added it. Access control is switched on once, the first time there
-/// is something to exclude; switched off later, it stays off.
+// The white-list services' apps stay out of the VPN (signed settings
+// `bypass_apps`); NekoVPN remembers what it added and what the user took back.
 const nekoBypassFile = 'neko_bypass.json';
 
 class NekoBypassState {
@@ -26,16 +18,9 @@ class NekoBypassState {
     this.switchedOn = false,
   });
 
-  /// The list as last applied.
   final Set<String> listed;
-
-  /// What NekoVPN put into the exclusions itself.
   final Set<String> added;
-
-  /// What the user took back into the VPN.
   final Set<String> kept;
-
-  /// Access control was switched on once.
   final bool switchedOn;
 
   Map<String, Object> toJson() => {
@@ -45,7 +30,6 @@ class NekoBypassState {
     'switched_on': switchedOn,
   };
 
-  /// What was saved; nothing remembered for junk.
   static NekoBypassState fromJson(Object? raw) {
     if (raw is! Map) return const NekoBypassState();
     Set<String> names(Object? value) {
@@ -63,8 +47,6 @@ class NekoBypassState {
 
 typedef NekoBypassResult = ({AccessControlProps access, NekoBypassState state});
 
-/// [access] with [list] applied over what [state] remembers. Only reject
-/// mode is touched: in accept mode the user named the apps that use the VPN.
 NekoBypassResult nekoMergeBypass(
   AccessControlProps access,
   List<String> list,
@@ -101,17 +83,14 @@ NekoBypassResult nekoMergeBypass(
   );
 }
 
-/// The user saved «Приложения без VPN» as [access], with [visible] the apps
-/// that were on the screen. An app of the list that was on the screen and is
-/// no longer excluded was taken back into the VPN; one excluded again is the
-/// list's once more. Apps not on the screen, not installed or hidden by a
-/// filter, say nothing: the screen drops them from what it saves.
 NekoBypassState nekoBypassSaved(
   NekoBypassState state, {
   required AccessControlProps access,
   required Set<String> visible,
 }) {
   if (access.mode != AccessControlMode.rejectSelected) return state;
+  // The screen saves only the apps it shows, so an app missing from the
+  // saved list was taken back only if it was on the screen.
   final excluded = access.rejectList.toSet();
   final ours = {...state.listed, ...state.added, ...state.kept};
   final takenBack = ours.intersection(visible).difference(excluded);
@@ -138,7 +117,6 @@ Future<NekoBypassState> nekoReadBypassState() async {
   }
 }
 
-/// Saves [state] in one step.
 Future<void> nekoWriteBypassState(NekoBypassState state) async {
   final file = await _file();
   final temp = File('${file.path}.tmp');
@@ -146,8 +124,6 @@ Future<void> nekoWriteBypassState(NekoBypassState state) async {
   await temp.rename(file.path);
 }
 
-/// Applies [list] to the access control [read] returns and hands the result
-/// to [write] when it changed. True when it did.
 Future<bool> nekoApplyBypass({
   required List<String> list,
   required AccessControlProps Function() read,
@@ -163,8 +139,6 @@ Future<bool> nekoApplyBypass({
   return changed;
 }
 
-/// Notes what the user did on «Приложения без VPN» ([nekoBypassSaved]). The
-/// screen does not wait for it, so a failure is only logged.
 Future<void> nekoRecordBypassSave({
   required AccessControlProps access,
   required Set<String> visible,

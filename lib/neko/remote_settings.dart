@@ -28,8 +28,6 @@ final _origin = RegExp(r'^https://[^/\s]+$');
 final _package = RegExp(r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$');
 final _mailbox = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
-/// At most this many apps kept out of the VPN by the settings, like the bot's
-/// scripts/neko_settings.py allows.
 const nekoBypassAppsLimit = 300;
 
 /// An announcement the service wants every user to read once.
@@ -65,16 +63,9 @@ class NekoSettings {
   final String? minVersion;
   final NekoMessage? message;
   final Map<String, Object> flags;
-
-  /// Android packages that stay out of the VPN by default: the services on
-  /// Russia's white lists (lib/neko/bypass.dart).
   final List<String> bypassApps;
-
-  /// The service's mailbox for «Запросить письмом» and «Напишите письмом».
   final String? mail;
 
-  /// Whether the app sends its network diagnostics; on unless the service
-  /// turns it off with the flag `netstat: false`.
   bool get netstat => flags['netstat'] != false;
 
   /// Null for a document this app cannot use: another schema, a version
@@ -101,7 +92,6 @@ Iterable<String> _strings(Object? raw) {
   return raw is List ? raw.whereType<String>() : const [];
 }
 
-/// Package names only, each once, at most [nekoBypassAppsLimit].
 List<String> _packages(Object? raw) {
   final seen = <String>{};
   return _strings(raw)
