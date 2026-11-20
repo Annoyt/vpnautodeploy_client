@@ -196,6 +196,63 @@ void main() {
       const ruOnly = NekoMessage(id: 'm', ru: 'Привет');
       expect(Intl.withLocale('en', () => ruOnly.text), 'Привет');
     });
+
+    test('the apps kept out of the VPN: package names, each once', () {
+      final settings = NekoSettings.fromDoc(
+        _doc()
+          ..['bypass_apps'] = [
+            'ru.rostel',
+            'com.vkontakte.android',
+            'ru.rostel',
+            'nodots',
+            '1ru.bad',
+            'ru..bad',
+            'ru.bad-dash',
+            'ru.bad name',
+            7,
+          ],
+      );
+      expect(settings?.bypassApps, ['ru.rostel', 'com.vkontakte.android']);
+      final many = NekoSettings.fromDoc(
+        _doc()
+          ..['bypass_apps'] = [
+            for (var i = 0; i < nekoBypassAppsLimit + 5; i++) 'ru.app$i',
+          ],
+      );
+      expect(many?.bypassApps, hasLength(nekoBypassAppsLimit));
+      expect(many?.bypassApps.last, 'ru.app${nekoBypassAppsLimit - 1}');
+      for (final junk in [null, 'ru.rostel', 7, {}]) {
+        final none = NekoSettings.fromDoc(_doc()..['bypass_apps'] = junk);
+        expect(none?.bypassApps, isEmpty, reason: '$junk');
+      }
+      expect(NekoSettings.fromDoc(_doc())?.bypassApps, isEmpty);
+    });
+
+    test('the mailbox: an address or nothing', () {
+      String? mail(Object? raw) =>
+          NekoSettings.fromDoc(_doc()..['mail'] = raw)?.mail;
+      expect(mail('help@example.org'), 'help@example.org');
+      for (final junk in [
+        null,
+        '',
+        'example.org',
+        'a@b',
+        'a b@c.org',
+        'a@@b.org',
+        7,
+      ]) {
+        expect(mail(junk), isNull, reason: '$junk');
+      }
+    });
+
+    test('network diagnostics are on unless the service says no', () {
+      bool? netstat(Object? flags) =>
+          NekoSettings.fromDoc(_doc(flags: flags))?.netstat;
+      expect(netstat(const {}), isTrue);
+      expect(netstat({'netstat': true}), isTrue);
+      expect(netstat({'netstat': 'false'}), isTrue);
+      expect(netstat({'netstat': false}), isFalse);
+    });
   });
 
   group('NekoSettingsStore', () {

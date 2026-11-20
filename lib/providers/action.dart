@@ -11,6 +11,7 @@ import 'package:fl_clash/database/database.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/neko/brand.dart';
+import 'package:fl_clash/neko/bypass.dart';
 import 'package:fl_clash/neko/profile_update.dart';
 import 'package:fl_clash/neko/remote_settings.dart';
 import 'package:fl_clash/neko/secure_proxy.dart';
