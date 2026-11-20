@@ -1,3 +1,7 @@
+import 'package:fl_clash/common/common.dart';
+import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/models/models.dart';
+
 /// How often a subscription asks to be fetched again: its
 /// `profile-update-interval` header, in hours (the Clash convention; the
 /// NekoVPN bot sends 6). FlClash ignores the header and fetches once a day,
@@ -15,3 +19,33 @@ Duration? nekoUpdateInterval(String? header) {
 
 const _minMinutes = 60;
 const _maxMinutes = 7 * 24 * 60;
+
+/// An edit made during the download stands unless the answer changes it.
+Duration nekoIntervalAfterUpdate({
+  required Duration started,
+  required Duration fetched,
+  required Duration now,
+}) => fetched == started ? now : fetched;
+
+String nekoSubscriptionKey(String url) {
+  final text = url.trim();
+  final uri = text.webUri;
+  if (uri == null) return text;
+  final path = uri.path.replaceFirst(_trailingSlashes, '');
+  return uri.replace(path: path).toString();
+}
+
+final _trailingSlashes = RegExp(r'/+$');
+
+extension NekoSubscriptions on List<Profile> {
+  Profile? nekoSubscription(String url, {int? currentId}) {
+    final key = nekoSubscriptionKey(url);
+    final same = where(
+      (profile) =>
+          profile.type == ProfileType.url &&
+          nekoSubscriptionKey(profile.url) == key,
+    );
+    return same.where((profile) => profile.id == currentId).firstOrNull ??
+        same.firstOrNull;
+  }
+}
