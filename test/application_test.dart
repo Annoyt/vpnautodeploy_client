@@ -1,6 +1,7 @@
 import 'package:fl_clash/application.dart';
 import 'package:fl_clash/manager/hotkey_manager.dart';
 import 'package:fl_clash/manager/manager.dart';
+import 'package:fl_clash/neko/netstat_manager.dart';
 import 'package:fl_clash/neko/network_memory_manager.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -23,6 +24,7 @@ Widget? _childOf(Widget widget) {
     CoreManager(:final child) => child,
     ConnectivityManager(:final child) => child,
     NekoNetworkMemoryManager(:final child) => child,
+    NekoNetstatManager(:final child) => child,
     WindowHeaderContainer(:final child) => child,
     VpnManager(:final child) => child,
     _ => null,
@@ -89,6 +91,7 @@ void main() {
       ConnectivityManager,
       NekoNetworkMemoryManager,
       VpnManager,
+      NekoNetstatManager,
     ]);
   });
 
@@ -119,6 +122,7 @@ void main() {
           contains(AndroidManager),
           contains(TileManager),
           contains(VpnManager),
+          contains(NekoNetstatManager),
         ),
       ),
     );

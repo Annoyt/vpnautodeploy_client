@@ -14,7 +14,6 @@ import com.follow.clash.common.QuickAction
 import com.follow.clash.common.ensureNotificationChannel
 import com.follow.clash.common.quickIntent
 import com.follow.clash.common.receiveBroadcastFlow
-import com.follow.clash.common.startForeground
 import com.follow.clash.common.toPendingIntent
 import com.follow.clash.core.Core
 import com.follow.clash.service.R
@@ -50,6 +49,8 @@ internal class NotificationModule(
     private val service: Service,
     private val scope: CoroutineScope,
 ) : ServiceModule {
+    private val foreground = NekoForeground(service)
+
     override fun start() {
         service.ensureNotificationChannel()
         update(ServiceConfig.notificationParams.value.extended)
@@ -111,7 +112,7 @@ internal class NotificationModule(
     private val stopIntent by lazy { QuickAction.STOP.quickIntent.toPendingIntent }
 
     private fun update(params: ExtendedNotificationParams) {
-        service.startForeground(
+        foreground.start(
             with(notificationBuilder) {
                 setContentTitle(params.title)
                 setContentText(params.contentText)

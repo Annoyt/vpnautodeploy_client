@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:fl_clash/core/controller.dart';
 import 'package:fl_clash/core/desktop/model.dart';
@@ -17,12 +18,24 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:riverpod/riverpod.dart';
 
+import '../helpers/app_paths.dart';
 import '../helpers/test_profiles.dart';
 
 class _MockCoreHandlerInterface extends Mock implements CoreHandlerInterface {}
 
 void main() {
   group('ProfilesAction', () {
+    late Directory home;
+
+    // A failed download asks the stored mirrors, which reads appPath; bound
+    // to path_provider, that fails unless an earlier file rebound it.
+    setUp(() async {
+      home = await Directory.systemTemp.createTemp('profiles_action');
+      await useAppPaths(home);
+    });
+
+    tearDown(() => home.delete(recursive: true));
+
     test('keeps edited profile data when remote update fails', () async {
       final original = Profile.normal(label: 'old label', url: 'bad-url');
       final edited = original.copyWith(
