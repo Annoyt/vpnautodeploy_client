@@ -1,5 +1,6 @@
 import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/neko/brand.dart';
+import 'package:fl_clash/neko/links.dart';
 import 'package:fl_clash/neko/sos.dart';
 import 'package:fl_clash/neko/sos_view.dart';
 import 'package:fl_clash/providers/providers.dart';
@@ -12,6 +13,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../helpers/test_app.dart';
 import '../helpers/test_profiles.dart';
+import 'neko_ui.dart';
 
 const _token = '0123456789abcdef0123456789abcdef';
 const _ours = 'https://autonekovpn.duckdns.org:9443/sub/$_token?format=clash';
@@ -27,7 +29,10 @@ ProviderContainer _container(WidgetTester tester, List<Profile> profiles) {
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
   final container = ProviderContainer(
-    overrides: [profilesProvider.overrideWith(() => TestProfiles(profiles))],
+    overrides: [
+      profilesProvider.overrideWith(() => TestProfiles(profiles)),
+      nekoMailProvider.overrideWith((ref) async => null),
+    ],
   );
   addTearDown(container.dispose);
   globalState.container = container;
@@ -128,6 +133,23 @@ void main() {
     expect(find.text(nekoSosNoProfile), findsOneWidget);
     expect(find.text(nekoSosBot), findsOneWidget);
     expect(find.text(nekoSosCopy), findsNothing);
+  });
+
+  testWidgets('no network at all: a letter to support', (tester) async {
+    final app = NekoTestApp(mail: nekoTestMail);
+    await app.pump(tester, const NekoSosView());
+    expect(find.text(nekoSosMailSubtitle), findsOneWidget);
+    await tester.tap(find.text(nekoSosMail));
+    await tester.pumpAndSettle();
+    expect(app.launches.opened, [
+      'mailto:help@neko.example?subject=SOS%20NekoVPN',
+    ]);
+  });
+
+  testWidgets('without the service mailbox no letter', (tester) async {
+    final app = NekoTestApp();
+    await app.pump(tester, const NekoSosView());
+    expect(find.text(nekoSosMail), findsNothing);
   });
 
   testWidgets('Tools opens the page', (tester) async {
