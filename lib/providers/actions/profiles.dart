@@ -157,6 +157,11 @@ class ProfilesAction extends _$ProfilesAction {
         label: latest.label.takeFirstValid([updated.label]),
         subscriptionInfo: updated.subscriptionInfo,
         lastUpdateDate: updated.lastUpdateDate,
+        autoUpdateDuration: nekoIntervalAfterUpdate(
+          started: profile.autoUpdateDuration,
+          fetched: updated.autoUpdateDuration,
+          now: latest.autoUpdateDuration,
+        ),
       );
       ref.read(profilesProvider.notifier).put(newProfile);
       if (profile.id == ref.read(currentProfileIdProvider)) {
@@ -355,6 +360,21 @@ class ProfilesAction extends _$ProfilesAction {
     String ageSecretKey = '',
   }) async {
     _showProfiles();
+    // NekoVPN: a subscription already here is refreshed, not added again.
+    final added = ref
+        .read(profilesProvider)
+        .nekoSubscription(link, currentId: ref.read(currentProfileIdProvider));
+    if (added != null) {
+      await globalState.loadingRun(
+        () => updateProfile(added, showLoading: true),
+        tag: LoadingTag.profiles,
+        title: currentAppLocalizations.addProfile,
+      );
+      if (ref.read(profilesProvider).getProfile(added.id) != null) {
+        ref.read(currentProfileIdProvider.notifier).value = added.id;
+      }
+      return;
+    }
     final profile = await globalState.loadingRun(
       tag: LoadingTag.profiles,
       () => link.isShareLink

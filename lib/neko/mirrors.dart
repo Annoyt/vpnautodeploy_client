@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:path/path.dart';
 
 import 'quota.dart';
@@ -83,6 +84,12 @@ class NekoMirrorStore {
   }
 }
 
+/// Fetches one address of a profile. Tests stand in for the network here:
+/// [request] keeps the first HttpClient it makes for the whole isolate.
+@visibleForTesting
+Future<Response<Uint8List>> Function(String url) nekoFetchProfile =
+    request.getFileResponseForUrl;
+
 /// Downloads a URL profile from [url] or, when that fails, from the
 /// mirrors its last answer named, in that order. The answer's headers
 /// replace the stored mirrors and plan. When no address answers, the
@@ -90,9 +97,13 @@ class NekoMirrorStore {
 Future<Response<Uint8List>> nekoDownloadProfile(
   int profileId,
   String url, {
-  required Future<Response<Uint8List>> Function(String url) download,
+  Future<Response<Uint8List>> Function(String url)? download,
 }) async {
-  final response = await _fromAnyAddress(profileId, url, download);
+  final response = await _fromAnyAddress(
+    profileId,
+    url,
+    download ?? nekoFetchProfile,
+  );
   final header = response.headers.value(nekoMirrorsHeader);
   await NekoMirrorStore.put(profileId, nekoMirrorsFromHeader(header, url: url));
   final plan = NekoPlan.fromHeader(response.headers.value(nekoPlanHeader));
