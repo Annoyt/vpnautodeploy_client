@@ -15,18 +15,18 @@ void main() {
   }
 
   group('selfUpdateAssetFor', () {
-    test('names the APK built for the running ABI', () {
+    test('names the APK our release carries for the running ABI', () {
       expect(
         nameOn(Abi.androidArm64, windowsInstalled: false),
-        'FlClash-dev-0.9.4-android-arm64.apk',
+        'NekoVPN-0.9.4-android-arm64-v8a.apk',
       );
       expect(
         nameOn(Abi.androidArm, windowsInstalled: false),
-        'FlClash-dev-0.9.4-android-armv7.apk',
+        'NekoVPN-0.9.4-android-armeabi-v7a.apk',
       );
       expect(
         nameOn(Abi.androidX64, windowsInstalled: false),
-        'FlClash-dev-0.9.4-android-amd64.apk',
+        'NekoVPN-0.9.4-android-x86_64.apk',
       );
     });
 
@@ -62,12 +62,9 @@ void main() {
 
     expect(
       updateAssetName('v0.9.4-pre.1+2', asset),
-      'FlClash-dev-0.9.4-pre.1.2-android-arm64.apk',
+      'NekoVPN-0.9.4-pre.1.2-android-arm64-v8a.apk',
     );
-    expect(
-      updateChecksumsName('v0.9.4-pre.1+2'),
-      'FlClash-dev-0.9.4-pre.1.2-SHA256SUMS',
-    );
+    expect(updateChecksumsName('v0.9.4-pre.1+2'), 'SHA256SUMS');
   });
 
   test('updates from the line tool/package.dart names this build', () {

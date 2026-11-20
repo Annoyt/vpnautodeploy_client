@@ -92,9 +92,7 @@ String nekoReleasePageUrl(Map<String, dynamic> release) {
   return ours ? url : nekoReleasesUrl;
 }
 
-/// What our releases carry (neko-release.yaml) and the in-app update
-/// downloads: `NekoVPN-<version>-android-<abi>.apk`, checked against
-/// `SHA256SUMS`. Null for a build our releases have no file for.
+/// Our release files (neko-release.yaml), which the in-app update downloads.
 const nekoUpdateChecksumsName = 'SHA256SUMS';
 
 String? nekoUpdateAssetName(String tag, ReleaseOs os, ReleaseArch arch) {

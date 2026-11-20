@@ -17,7 +17,7 @@ concurrency:
 jobs:
   check:
     name: Check the issue
-    if: ${{ github.event_name == 'issues' && !github.event.repository.fork }}
+    if: ${{ github.repository == 'chen08209/FlClash' && github.event_name == 'issues' && !github.event.repository.fork }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -35,7 +35,7 @@ jobs:
 
   sweep:
     name: Close and lock
-    if: ${{ github.event_name != 'issues' && !github.event.repository.fork }}
+    if: ${{ github.repository == 'chen08209/FlClash' && github.event_name != 'issues' && !github.event.repository.fork }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

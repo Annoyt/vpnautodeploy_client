@@ -1,7 +1,8 @@
 import 'package:fl_clash/neko/brand.dart';
 import 'package:fl_clash/neko/multipath.dart';
+import 'package:fl_clash/ui/ui.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material_ui/material_ui.dart';
 
 import '../helpers/test_app.dart';
 

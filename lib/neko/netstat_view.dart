@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/ui/icons/icons.dart';
 import 'package:fl_clash/ui/ui.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/widgets.dart';
 
 import 'brand.dart';
 import 'netstat.dart';
@@ -91,4 +91,4 @@ Future<bool> _ask(Future<bool> Function() permission) async {
   }
 }
 
-void _note(BuildContext context, String text) => context.showNotifier(text);
+void _note(BuildContext context, String text) => dialogs.showBanner(text);

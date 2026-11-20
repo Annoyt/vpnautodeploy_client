@@ -34,6 +34,13 @@ bool _gated(YamlMap jobs, String name) {
   return _needs(job['needs']).any((need) => _gated(jobs, need));
 }
 
+bool _writesIssues(YamlMap doc, YamlMap job) {
+  bool writes(Object? permissions) =>
+      permissions == 'write-all' ||
+      (permissions is YamlMap && permissions['issues'] == 'write');
+  return writes(doc['permissions']) || writes(job['permissions']);
+}
+
 bool _publishing(YamlMap job) {
   final steps = job['steps'];
   if (steps is! YamlList) return false;
@@ -82,6 +89,15 @@ void main() {
 
   for (final file in _upstreamWorkflows()) {
     final name = _fileName(file);
+    test('$name touches issues only in chen08209/FlClash', () {
+      final doc = loadYaml(file.readAsStringSync()) as YamlMap;
+      final jobs = doc['jobs'] as YamlMap;
+      for (final job in jobs.keys.cast<String>()) {
+        if (!_writesIssues(doc, jobs[job] as YamlMap)) continue;
+        expect(_gated(jobs, job), isTrue, reason: '$name: job $job');
+      }
+    });
+
     test('$name publishes only from chen08209/FlClash', () {
       final jobs = _jobs(file.readAsStringSync());
       for (final job in jobs.keys.cast<String>()) {

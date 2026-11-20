@@ -6,8 +6,8 @@ import 'package:fl_clash/state.dart';
 import 'package:fl_clash/ui/icons/icons.dart';
 import 'package:fl_clash/ui/ui.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_ui/material_ui.dart';
 
 import 'brand.dart';
 import 'links.dart';
@@ -117,7 +117,7 @@ class _NekoSosViewState extends ConsumerState<NekoSosView> {
     final report = _report;
     if (report == null) return;
     await Clipboard.setData(ClipboardData(text: jsonEncode(report)));
-    dialogs.showNotifier(nekoSosCopied);
+    dialogs.showBanner(nekoSosCopied);
   }
 
   List<Widget> _answerItems(NekoSosAnswer answer) {
@@ -187,7 +187,7 @@ class _NekoSosViewState extends ConsumerState<NekoSosView> {
   Widget build(BuildContext context) {
     final answer = _answer;
     final mail = ref.watch(nekoMailProvider).value;
-    return CommonScaffold(
+    return Scaffold(
       isLoading: _sending,
       title: nekoSosTitle,
       body: ListView(

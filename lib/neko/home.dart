@@ -15,8 +15,8 @@ import 'package:fl_clash/views/dashboard/widgets/profile_detail.dart';
 import 'package:fl_clash/views/profiles/add.dart';
 import 'package:fl_clash/views/profiles/profiles.dart';
 import 'package:fl_clash/views/proxies/proxies.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_ui/material_ui.dart';
 
 import 'brand.dart';
 import 'links.dart';
@@ -120,7 +120,7 @@ class NekoHomeView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gap = cardSpacingOf(context, ref.watch(viewModeProvider));
-    return CommonScaffold(
+    return Scaffold(
       backgroundColor: DashboardColors.of(context).page,
       title: PageLabel.dashboard.label,
       body: LayoutBuilder(
@@ -429,32 +429,29 @@ class _ConnectButton extends ConsumerWidget {
         button: true,
         label: label,
         child: ElasticPress(
-          child: Material(
-            color: fill,
+          child: PressSurface(
+            fill: fill,
             shape: AppShape.full,
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              customBorder: AppShape.full,
-              onTap: () {
-                if (hasProfile) {
-                  ref.read(commonActionProvider.notifier).toggleRunning();
-                } else {
-                  unawaited(showNekoNeedSubscription(context));
-                }
-              },
-              child: SizedBox.square(
-                dimension: _size,
-                child: Center(
-                  child: TweenAnimationBuilder<double>(
-                    tween: Tween(end: running ? 1 : 0),
-                    duration: context.motionDuration(_morphDuration),
-                    curve: Curves.easeOutBack,
-                    builder: (_, progress, _) => GlyphIcon(
-                      AppGlyphs.playPause(progress),
-                      size: _size * 0.34,
-                      color: ink,
-                      fill: 1,
-                    ),
+            clipsChild: true,
+            onPressed: () {
+              if (hasProfile) {
+                ref.read(commonActionProvider.notifier).toggleRunning();
+              } else {
+                unawaited(showNekoNeedSubscription(context));
+              }
+            },
+            child: SizedBox.square(
+              dimension: _size,
+              child: Center(
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(end: running ? 1 : 0),
+                  duration: context.motionDuration(_morphDuration),
+                  curve: Curves.easeOutBack,
+                  builder: (_, progress, _) => GlyphIcon(
+                    AppGlyphs.playPause(progress),
+                    size: _size * 0.34,
+                    color: ink,
+                    fill: 1,
                   ),
                 ),
               ),

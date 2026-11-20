@@ -13,6 +13,23 @@ const _desktopOnly = {
   'helperCorruptTip',
   'coreBlockedByPolicyTip',
   'coreBlockedBySmartAppControlTip',
+  'updateRestartTip',
+};
+
+/// MITM's texts: shown only with `rsFeature`, off in the dev line we build.
+const _rsLineOnly = {
+  'mitmEnableTip',
+  'regenerateCertificateTip',
+  'mitmInstallSystemCaTip',
+  'mitmOldSystemCertificateLeftTip',
+  'mitmRemoveSystemCertificateTip',
+  'mitmDecryptHostTip',
+  'mitmNetworkRisk',
+  'mitmClientSourceRisk',
+  'mitmSkipDeviceRule',
+  'mitmSkipManagedCa',
+  'mitmSkipAppOnly',
+  'mitmSkipReflect',
 };
 
 List<String> _textsNamingFlClash() {
@@ -68,7 +85,8 @@ void main() {
   });
 
   test('the Android app shows no upstream text naming FlClash as is', () {
-    bool android(String key) => !_desktopOnly.contains(key);
+    bool android(String key) =>
+        !_desktopOnly.contains(key) && !_rsLineOnly.contains(key);
     final keys = _textsNamingFlClash().where(android).toList();
     expect(keys, isNotEmpty);
     final uses = RegExp('\\.(${keys.join('|')})\\b');
