@@ -1,4 +1,5 @@
 import 'package:fl_clash/common/constant.dart';
+import 'package:fl_clash/common/release_asset.dart';
 
 import 'version.dart';
 
@@ -89,4 +90,21 @@ String nekoReleasePageUrl(Map<String, dynamic> release) {
   final url = release['html_url'];
   final ours = url is String && url.startsWith('$nekoReleasesUrl/');
   return ours ? url : nekoReleasesUrl;
+}
+
+/// What our releases carry (neko-release.yaml) and the in-app update
+/// downloads: `NekoVPN-<version>-android-<abi>.apk`, checked against
+/// `SHA256SUMS`. Null for a build our releases have no file for.
+const nekoUpdateChecksumsName = 'SHA256SUMS';
+
+String? nekoUpdateAssetName(String tag, ReleaseOs os, ReleaseArch arch) {
+  if (os != ReleaseOs.android) return null;
+  final abi = switch (arch) {
+    ReleaseArch.arm64 => 'arm64-v8a',
+    ReleaseArch.armv7 => 'armeabi-v7a',
+    ReleaseArch.amd64 => 'x86_64',
+    ReleaseArch.universal => null,
+  };
+  if (abi == null) return null;
+  return 'NekoVPN-${releaseVersionOfTag(tag)}-android-$abi.apk';
 }

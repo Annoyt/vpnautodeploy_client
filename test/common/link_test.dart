@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:fl_clash/common/link.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late StreamController<Uri> links;
   late List<String> received;
 
@@ -34,7 +37,7 @@ void main() {
   test('an install-config link reports its url', () async {
     await listen();
 
-    await emit('flclash://install-config?url=https://example.com/a.yaml');
+    await emit('nekovpn://install-config?url=https://example.com/a.yaml');
 
     expect(received, ['https://example.com/a.yaml']);
   });
@@ -42,7 +45,7 @@ void main() {
   test('an install-config link without a url is ignored', () async {
     await listen();
 
-    await emit('flclash://install-config');
+    await emit('nekovpn://install-config');
 
     expect(received, isEmpty);
   });
@@ -50,8 +53,8 @@ void main() {
   test('an install-config link with a blank url is ignored', () async {
     await listen();
 
-    await emit('flclash://install-config?url=');
-    await emit('flclash://install-config?url=%20');
+    await emit('nekovpn://install-config?url=');
+    await emit('nekovpn://install-config?url=%20');
 
     expect(received, isEmpty);
   });
@@ -59,7 +62,7 @@ void main() {
   test('a link for another host is ignored', () async {
     await listen();
 
-    await emit('flclash://open-profile?url=https://example.com/a.yaml');
+    await emit('nekovpn://open-profile?url=https://example.com/a.yaml');
 
     expect(received, isEmpty);
   });
@@ -72,37 +75,54 @@ void main() {
 
     expect(linkManager.subscription, isNot(same(first)));
 
-    await emit('flclash://install-config?url=https://example.com/a.yaml');
+    await emit('nekovpn://install-config?url=https://example.com/a.yaml');
 
     expect(received, ['https://example.com/a.yaml']);
   });
 
-  test(
-    'a seeded launch argument is delivered once a listener attaches',
-    () async {
-      linkManager.seedInitialLink([
-        '--verbose',
-        'nekovpn://install-config?url=https://example.com/a.yaml',
-      ]);
-
-      expect(received, isEmpty);
-
-      await listen();
-
-      expect(received, ['https://example.com/a.yaml']);
-
-      await listen();
-
-      expect(received, ['https://example.com/a.yaml']);
-    },
-  );
-
-  test('launch arguments without a known scheme are ignored', () async {
-    linkManager.seedInitialLink(['https://example.com/a.yaml', 'not a uri']);
-
+  test('a link with a scheme the app does not claim is ignored', () async {
     await listen();
 
+    await emit('https://install-config?url=https://example.com/a.yaml');
+
     expect(received, isEmpty);
+  });
+
+  group('androidLinks', () {
+    const channel = MethodChannel('test/link');
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+
+    tearDown(() => messenger.setMockMethodCallHandler(channel, null));
+
+    Future<void> push(String link) async {
+      await messenger.handlePlatformMessage(
+        channel.name,
+        channel.codec.encodeMethodCall(MethodCall('link', link)),
+        (_) {},
+      );
+    }
+
+    test('delivers the held links, then pushed ones', () async {
+      final calls = <String>[];
+      messenger.setMockMethodCallHandler(channel, (call) async {
+        calls.add(call.method);
+        return ['nekovpn://install-config?url=https://example.com/a.yaml'];
+      });
+      final uris = <Uri>[];
+      final subscription = androidLinks(channel).listen(uris.add);
+      await pumpEventQueue();
+
+      await push('nekovpn://install-config?url=https://example.com/b.yaml');
+      await pumpEventQueue();
+
+      expect(calls, ['takeLinks']);
+      expect(uris.map((uri) => uri.queryParameters['url']), [
+        'https://example.com/a.yaml',
+        'https://example.com/b.yaml',
+      ]);
+      await subscription.cancel();
+    });
   });
 
   test('destroy stops delivery and is safe to repeat', () async {
@@ -110,7 +130,7 @@ void main() {
 
     linkManager.destroy();
     linkManager.destroy();
-    await emit('flclash://install-config?url=https://example.com/a.yaml');
+    await emit('nekovpn://install-config?url=https://example.com/a.yaml');
 
     expect(linkManager.subscription, isNull);
     expect(received, isEmpty);
