@@ -5,6 +5,7 @@ import 'package:fl_clash/models/models.dart';
 import 'package:fl_clash/neko/brand.dart';
 import 'package:fl_clash/neko/gateway_view.dart';
 import 'package:fl_clash/neko/multipath.dart';
+import 'package:fl_clash/neko/netstat_view.dart';
 import 'package:fl_clash/neko/network_memory_manager.dart';
 import 'package:fl_clash/neko/sos_view.dart';
 import 'package:fl_clash/providers/providers.dart';
@@ -80,6 +81,12 @@ class _ToolViewState extends ConsumerState<ToolsView> {
       appSettingProvider.select((state) => state.developerMode),
     );
     final items = [
+      if (system.isAndroid)
+        generateSection(
+          title: nekoNetstatSection,
+          items: const [NekoNetstatItem()],
+          footer: nekoNetstatFooter,
+        ),
       generateSection(
         items: [
           const NekoSosItem(),

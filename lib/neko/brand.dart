@@ -45,6 +45,36 @@ const _multipathEn =
     'carrier: turn on its hotspot, join it, and keep mobile data on here. '
     'Uses mobile data and battery.';
 
+String get nekoNetstatSection =>
+    _isRu ? 'Диагностика сети' : 'Network diagnostics';
+
+String get nekoNetstatTitle =>
+    _isRu ? 'Помогать искать блокировки' : 'Help find the blocks';
+
+String get nekoNetstatSubtitle => _isRu
+    ? 'При обрыве отправлять номер вышки и район'
+    : 'With a drop, send the cell tower and the area';
+
+String get nekoNetstatDenied => _isRu
+    ? 'Без доступа к точному местоположению вышку не узнать'
+    : 'Without precise location the cell tower stays unknown';
+
+String get nekoNetstatFooter => _isRu ? _netstatRu : _netstatEn;
+
+const _netstatRu =
+    'Пока VPN включён, приложение раз в 10 минут проверяет, работает ли он и '
+    'открываются ли российские сайты напрямую, и через VPN сообщает сервису '
+    'тип сети, оператора и уровень сигнала. Подписку и IP-адрес сервис не '
+    'хранит. Номер вышки и район уходят только с этим переключателем и только '
+    'при обрыве.';
+
+const _netstatEn =
+    'While the VPN is on, the app checks every 10 minutes whether it works '
+    'and whether Russian sites open directly, and tells the service, through '
+    'the VPN, the network type, the carrier and the signal level. The service '
+    'keeps neither your subscription nor your IP address. The cell tower and '
+    'the area go only with this switch on, and only with a drop.';
+
 String get nekoSosSubtitle => _isRu ? _sosSubtitleRu : _sosSubtitleEn;
 
 String get nekoSosIntro => _isRu ? _sosIntroRu : _sosIntroEn;
