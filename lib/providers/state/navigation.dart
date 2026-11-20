@@ -10,13 +10,14 @@ NavigationItemsState navigationItemsState(Ref ref) {
     currentGroupsStateProvider.select((state) => state.value.isNotEmpty),
   );
   final isInit = ref.watch(initProvider);
+  final items =
+      navigationPort?.getItems(
+        openLogs: openLogs,
+        hasProxies: !isInit ? hasProfiles : hasProxies,
+      ) ??
+      const <NavigationItem>[];
   return NavigationItemsState(
-    value:
-        navigationPort?.getItems(
-          openLogs: openLogs,
-          hasProxies: !isInit ? hasProfiles : hasProxies,
-        ) ??
-        const [],
+    value: nekoNavigationItems(items, ref.watch(nekoViewProvider)),
   );
 }
 

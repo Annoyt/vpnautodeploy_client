@@ -13,6 +13,7 @@ import 'package:fl_clash/database/database.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/neko/view_mode.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/views/disclaimer.dart';
@@ -126,8 +127,13 @@ class Bootstrap {
     );
     final appStateOverrides = buildAppStateOverrides(appState);
     final configOverrides = buildConfigOverrides(config);
+    final nekoAdvanced = await NekoViewStore.advanced();
     final container = ProviderContainer(
-      overrides: [...appStateOverrides, ...configOverrides],
+      overrides: [
+        ...appStateOverrides,
+        ...configOverrides,
+        nekoAdvancedProvider.overrideWithBuild((_, _) => nekoAdvanced),
+      ],
     );
     globalState.container = container;
     container

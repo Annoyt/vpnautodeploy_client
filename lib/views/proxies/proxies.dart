@@ -1,6 +1,7 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/enum/enum.dart';
 import 'package:fl_clash/models/models.dart';
+import 'package:fl_clash/neko/zone_view.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/ui/icons/icons.dart';
 import 'package:fl_clash/views/proxies/list.dart';
@@ -174,10 +175,13 @@ class _ProxiesViewState extends ConsumerState<ProxiesView> {
       menuItems: picker ? const [] : _buildMenuItems(context, style),
       title: context.appLocalizations.proxies,
       searchState: AppBarSearchState(onSearch: _onSearch),
-      body: switch (style.type) {
-        ProxiesType.tab => _tabView,
-        ProxiesType.list => const ProxiesListView(),
-      },
+      body: NekoExitZoneHeader(
+        enabled: !picker,
+        child: switch (style.type) {
+          ProxiesType.tab => _tabView,
+          ProxiesType.list => const ProxiesListView(),
+        },
+      ),
     );
   }
 }

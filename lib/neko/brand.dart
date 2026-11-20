@@ -322,3 +322,128 @@ String get nekoNetworkMemorySubtitle => _isRu
           'прошлый раз'
     : 'In a known network the cascade starts on the server that worked '
           'there last time';
+
+/// The bot's answer to the app (contract D3): the button that adds a key it
+/// has, or the new user's way to a demo.
+const nekoBotAppUrl = '$nekoBotUrl?start=app';
+
+/// Subjects the bot's mail intake reads (contract D4): a request for a
+/// subscription goes to the admin, an SOS from a known address is answered
+/// with the emergency subscription.
+const nekoMailRequestSubject = 'NekoVPN: запрос подписки';
+const nekoMailSosSubject = 'SOS NekoVPN';
+
+String get nekoHomeTitle => _isRu ? 'Главная' : 'Home';
+
+String get nekoSettingsTitle => _isRu ? 'Настройки' : 'Settings';
+
+String get nekoRefreshSubscription =>
+    _isRu ? 'Обновить подписку' : 'Refresh subscription';
+
+String get nekoNoSubscription =>
+    _isRu ? 'Подписки пока нет' : 'No subscription yet';
+
+String get nekoAddSubscription =>
+    _isRu ? 'Добавить подписку' : 'Add a subscription';
+
+String nekoValidUntil(String date) => _isRu ? 'до $date' : 'until $date';
+
+String nekoEndedOn(String date) =>
+    _isRu ? 'Закончилась $date' : 'Ended on $date';
+
+String nekoUsedOf(String used, String total) =>
+    _isRu ? '$used из $total' : '$used of $total';
+
+String get nekoDemo => _isRu ? 'Демо' : 'Demo';
+
+String nekoServer(String name) => _isRu ? 'Сервер: $name' : 'Server: $name';
+
+String get nekoAuto => _isRu ? 'Авто' : 'Auto';
+
+String get nekoTopSpeed => _isRu ? 'Наибольшая скорость' : 'Top speed';
+
+String get nekoNeedSubscription =>
+    _isRu ? 'Нужна подписка' : 'You need a subscription';
+
+String get nekoNeedSubscriptionText => _isRu
+    ? 'Добавьте ссылку на подписку или попросите её у нашего бота — в '
+          'Telegram или письмом.'
+    : 'Add a subscription link, or ask our bot for one, in Telegram or by '
+          'email.';
+
+String get nekoRequestTelegram =>
+    _isRu ? 'Отправить запрос в Telegram' : 'Ask in Telegram';
+
+String get nekoRequestMail => _isRu ? 'Запросить письмом' : 'Ask by email';
+
+String get nekoAddCardTitle =>
+    _isRu ? 'Добавьте подписку' : 'Add your subscription';
+
+String get nekoAddCardText => _isRu
+    ? 'Ссылку на подписку присылает наш бот в Telegram.'
+    : 'Our Telegram bot sends the subscription link.';
+
+String get nekoPasteLink => _isRu ? 'Вставить ссылку' : 'Paste the link';
+
+String get nekoScanQr => _isRu ? 'Сканировать QR' : 'Scan a QR code';
+
+String get nekoOpenBot => _isRu ? 'Открыть бота' : 'Open the bot';
+
+String get nekoVpnPromptNote => _isRu
+    ? 'При первом включении Android спросит «Разрешить VPN?»'
+    : 'The first time you connect, Android asks you to allow the VPN.';
+
+String get nekoCannotConnect => _isRu ? 'Не подключается?' : 'Cannot connect?';
+
+String get nekoCannotConnectSubtitle =>
+    _isRu ? 'Помощь и отчёт в поддержку' : 'Help and a report to support';
+
+String nekoSubscriptionRow(String name) =>
+    _isRu ? 'Подписка: $name' : 'Subscription: $name';
+
+String get nekoSubscriptionRowSubtitle => _isRu
+    ? 'Выбрать другую или добавить — их может быть несколько'
+    : 'Pick another or add one; there can be several';
+
+String get nekoPasteFromClipboard =>
+    _isRu ? 'Вставить из буфера' : 'Paste from the clipboard';
+
+String get nekoAskBot => _isRu
+    ? 'Попросить подписку в Telegram-боте'
+    : 'Ask the Telegram bot for a subscription';
+
+String get nekoAskMail =>
+    _isRu ? 'Попросить подписку письмом' : 'Ask for a subscription by email';
+
+String get nekoExitZone => _isRu ? 'Зона выхода' : 'Exit zone';
+
+String get nekoSosMail =>
+    _isRu ? 'Нет связи? Напишите письмом' : 'No connection? Write an email';
+
+String get nekoSosMailSubtitle => _isRu
+    ? 'Откроется почта с готовым письмом в поддержку'
+    : 'Your mail app opens with a letter to support';
+
+String get nekoBasicSection => _isRu ? 'Основное' : 'Basics';
+
+String get nekoHelpSection => _isRu ? 'Помощь' : 'Help';
+
+String get nekoExpertSection => _isRu ? 'Для опытных' : 'For experts';
+
+String get nekoAdvancedMode => _isRu ? 'Расширенный режим' : 'Advanced mode';
+
+String get nekoAdvancedModeSubtitle => _isRu
+    ? 'Вкладки «Прокси» и «Профили», все настройки FlClash'
+    : 'The Proxies and Profiles tabs, every FlClash setting';
+
+String get nekoBypassApps => _isRu ? 'Приложения без VPN' : 'Apps without VPN';
+
+String get nekoBypassAppsSubtitle => _isRu
+    ? 'Сервисы из белых списков РФ идут мимо VPN'
+    : 'Services on the Russian white lists go around the VPN';
+
+String get nekoAboutSubtitle =>
+    _isRu ? 'Версия, обновления, бот' : 'Version, updates, the bot';
+
+String nekoCannotOpen(String target) =>
+    _isRu ? 'Не получилось открыть: $target' : 'Could not open $target';

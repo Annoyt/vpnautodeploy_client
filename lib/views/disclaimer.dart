@@ -1,6 +1,8 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/l10n/l10n.dart';
 import 'package:fl_clash/neko/brand.dart';
+import 'package:fl_clash/neko/consent.dart';
+import 'package:fl_clash/neko/layout.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/ui/icons/icons.dart';
 import 'package:fl_clash/widgets/widgets.dart';
@@ -273,7 +275,10 @@ class _ConsentLayout extends StatelessWidget {
     return Column(
       children: [
         Expanded(child: child),
-        _ConsentBar(maxWidth: maxWidth, gutter: gutter, compact: compact),
+        if (nekoLayout)
+          NekoConsentBar(maxWidth: maxWidth, gutter: gutter, compact: compact)
+        else
+          _ConsentBar(maxWidth: maxWidth, gutter: gutter, compact: compact),
       ],
     );
   }

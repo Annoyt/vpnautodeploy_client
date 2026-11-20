@@ -8,6 +8,8 @@ import 'package:fl_clash/neko/multipath.dart';
 import 'package:fl_clash/neko/netstat_view.dart';
 import 'package:fl_clash/neko/network_memory_manager.dart';
 import 'package:fl_clash/neko/sos_view.dart';
+import 'package:fl_clash/neko/tools_view.dart';
+import 'package:fl_clash/neko/view_mode.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/ui/icons/icons.dart';
 import 'package:fl_clash/views/about.dart';
@@ -75,43 +77,78 @@ class _ToolViewState extends ConsumerState<ToolsView> {
     );
   }
 
+  /// NekoVPN's Settings: everything below comes back in its advanced view.
+  List<Widget> _getNekoList(NekoView view, Widget moreTools, bool developer) {
+    final appLocalizations = context.appLocalizations;
+    return nekoSettingsSections(
+      advanced: view == NekoView.advanced,
+      basic: const [_LocaleItem(), _ThemeItem()],
+      expert: [
+        generateSection(
+          items: [
+            const _GeneralItem(),
+            const _AdvancedConfigItem(),
+            const _CustomResourcesItem(),
+            const _BackupItem(),
+            if (system.isDesktop) const _HotkeyItem(),
+          ],
+          footer: [
+            appLocalizations.advancedConfigDesc,
+            appLocalizations.customProfileResourcesDesc,
+          ].join('\n'),
+        ),
+        moreTools,
+        generateSection(
+          items: [
+            const _DisclaimerItem(),
+            if (developer) const _DeveloperItem(),
+          ],
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final developerMode = ref.watch(
       appSettingProvider.select((state) => state.developerMode),
     );
-    final items = [
-      if (system.isAndroid)
-        generateSection(
-          title: nekoNetstatSection,
-          items: const [NekoNetstatItem()],
-          footer: nekoNetstatFooter,
-        ),
-      generateSection(
-        items: [
-          const NekoSosItem(),
-          if (system.isAndroid) const NekoMultipathItem(),
-          if (system.isAndroid) const NekoGatewayItem(),
-          if (system.isAndroid) const NekoNetworkMemoryItem(),
-        ],
-        footer: system.isAndroid ? nekoMultipathFooter : null,
-      ),
-      Consumer(
-        builder: (_, ref, _) {
-          final state = ref.watch(moreToolsSelectorStateProvider);
-          if (state.navigationItems.isEmpty) {
-            return Container();
-          }
-          return generateSection(
-            items: state.navigationItems.map(_buildNavigationMenuItem),
-          );
-        },
-      ),
-      _getSettingList(),
-      _getOtherList(developerMode),
-    ];
+    final view = ref.watch(nekoViewProvider);
+    final moreTools = Consumer(
+      builder: (_, ref, _) {
+        final state = ref.watch(moreToolsSelectorStateProvider);
+        if (state.navigationItems.isEmpty) {
+          return Container();
+        }
+        return generateSection(
+          items: state.navigationItems.map(_buildNavigationMenuItem),
+        );
+      },
+    );
+    final items = view != NekoView.flclash
+        ? _getNekoList(view, moreTools, developerMode)
+        : [
+            if (system.isAndroid)
+              generateSection(
+                title: nekoNetstatSection,
+                items: const [NekoNetstatItem()],
+                footer: nekoNetstatFooter,
+              ),
+            generateSection(
+              items: [
+                const NekoSosItem(),
+                if (system.isAndroid) const NekoMultipathItem(),
+                if (system.isAndroid) const NekoGatewayItem(),
+                if (system.isAndroid) const NekoNetworkMemoryItem(),
+              ],
+              footer: system.isAndroid ? nekoMultipathFooter : null,
+            ),
+            moreTools,
+            _getSettingList(),
+            _getOtherList(developerMode),
+          ];
     return CommonScaffold(
-      title: context.appLocalizations.tools,
+      title: PageLabel.tools.label,
       body: Builder(
         builder: (context) => ListView.builder(
           key: toolsStoreKey,

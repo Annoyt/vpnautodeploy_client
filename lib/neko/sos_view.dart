@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'brand.dart';
+import 'links.dart';
 import 'remote_settings.dart';
 import 'sos.dart';
 
@@ -166,9 +167,26 @@ class _NekoSosViewState extends ConsumerState<NekoSosView> {
     ];
   }
 
+  /// No network at all, mail still going: the bot answers a letter with this
+  /// subject from a known address with the emergency subscription itself.
+  Widget _mailSection(String mail) {
+    return generateSection(
+      items: [
+        ListItem(
+          leading: const GlyphIcon(AppGlyphs.compose),
+          title: Text(nekoSosMail),
+          subtitle: Text(nekoSosMailSubtitle),
+          trailing: const GlyphIcon(AppGlyphs.openExternal),
+          onTap: () => nekoOpen(ref, nekoMailto(mail, nekoMailSosSubject)),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final answer = _answer;
+    final mail = ref.watch(nekoMailProvider).value;
     return CommonScaffold(
       isLoading: _sending,
       title: nekoSosTitle,
@@ -188,6 +206,7 @@ class _NekoSosViewState extends ConsumerState<NekoSosView> {
           ),
           const SizedBox(height: 16),
           if (answer != null) ..._answerItems(answer),
+          if (mail != null) _mailSection(mail),
           if (_failed) ..._fallbackItems(nekoSosFailed, copy: true),
           if (_noProfile) ..._fallbackItems(nekoSosNoProfile),
         ],

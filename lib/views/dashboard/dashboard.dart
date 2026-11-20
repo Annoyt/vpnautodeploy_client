@@ -3,7 +3,8 @@ import 'dart:math' as math;
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/core/core.dart';
 import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/neko/quota_view.dart';
+import 'package:fl_clash/neko/home.dart';
+import 'package:fl_clash/neko/view_mode.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/ui/icons/icons.dart';
 import 'package:fl_clash/widgets/widgets.dart';
@@ -47,6 +48,9 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
 
   @override
   Widget build(BuildContext context) {
+    if (ref.watch(nekoViewProvider) == NekoView.simple) {
+      return const NekoHomeView();
+    }
     final platform = widget.platform ?? SupportPlatform.currentPlatform;
     final viewSize = ref.watch(viewSizeProvider);
     final sideWidth = ref.watch(sideWidthProvider);
@@ -63,7 +67,7 @@ class _DashboardViewState extends ConsumerState<DashboardView> {
       backgroundColor: DashboardColors.of(context).page,
       title: editing
           ? appLocalizations.editDashboard
-          : appLocalizations.dashboard,
+          : PageLabel.dashboard.label,
       actions: [if (!editing && coreLib == null) const CoreStatusButton()],
       confirmationAction: editing
           ? IconButtonData(
@@ -341,9 +345,9 @@ class _MobileDashboard extends ConsumerWidget {
               sliver: SliverToBoxAdapter(
                 child: Column(
                   children: [
-                    // NekoVPN: the key's month, above the cards when the
-                    // profile is ours (lib/neko/quota_view.dart).
-                    NekoQuotaBanner(gap: gap),
+                    // NekoVPN: Home's own blocks around the cards
+                    // (lib/neko/home.dart).
+                    NekoHomeHead(gap: gap),
                     Column(
                       spacing: gap,
                       children: [
@@ -354,6 +358,7 @@ class _MobileDashboard extends ConsumerWidget {
                           ),
                       ],
                     ),
+                    NekoHomeFoot(gap: gap),
                   ],
                 ),
               ),

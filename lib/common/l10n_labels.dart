@@ -1,4 +1,5 @@
 import 'package:fl_clash/enum/enum.dart';
+import 'package:fl_clash/neko/layout.dart';
 import 'package:fl_clash/ui/color.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -6,6 +7,8 @@ import 'app_localizations.dart';
 
 extension PageLabelL10n on PageLabel {
   String get label {
+    final neko = nekoPageLabel(this);
+    if (neko != null) return neko;
     final appLocalizations = currentAppLocalizations;
     return switch (this) {
       PageLabel.dashboard => appLocalizations.dashboard,
