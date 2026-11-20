@@ -74,9 +74,11 @@ void main() {
   ) async {
     useNekoLayout();
     final app = NekoTestApp(advanced: true);
-    await app.pump(tester, const ToolsView(), size: const Size(400, 2800));
+    await app.pump(tester, const ToolsView(), size: const Size(400, 3600));
     final l10n = currentAppLocalizations;
     _expectTexts([
+      nekoNetstatSection,
+      nekoNetstatTitle,
       nekoAdvancedMode,
       nekoNetworkMemoryTitle,
       nekoMultipathTitle,
@@ -89,11 +91,7 @@ void main() {
       PageLabel.connections.label,
       l10n.disclaimer,
     ], findsOneWidget);
-    _expectTexts([
-      nekoNetstatSection,
-      nekoSosTitle,
-      l10n.accessControl,
-    ], findsNothing);
+    _expectTexts([nekoSosTitle, l10n.accessControl], findsNothing);
   });
 
   testWidgets('the switch keeps the view and brings back the tabs', (

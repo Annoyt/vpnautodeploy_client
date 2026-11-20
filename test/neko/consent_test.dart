@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/neko/consent.dart';
 import 'package:fl_clash/providers/app.dart';
@@ -31,17 +33,6 @@ Future<void> _pumpPhone(WidgetTester tester, [Size size = _phone]) async {
   await tester.pump();
 }
 
-Iterable<FilledButton> _agree(WidgetTester tester) {
-  final buttons = tester.widgetList<FilledButton>(
-    find.descendant(
-      of: find.byType(NekoConsentBar),
-      matching: find.byType(FilledButton),
-    ),
-  );
-  expect(buttons, isNotEmpty);
-  return buttons;
-}
-
 bool _hittable(WidgetTester tester, Finder finder) {
   final target = tester.renderObject(finder);
   final result = tester.hitTestOnBinding(tester.getCenter(finder));
@@ -53,19 +44,25 @@ void main() {
     tester,
   ) async {
     await _pumpPhone(tester);
+    var answered = false;
     final agreed = requestDisclaimerConsent();
+    unawaited(agreed.then((_) => answered = true));
     await tester.pumpAndSettle();
     final l10n = currentAppLocalizations;
     final tick = find.text(l10n.disclaimerAcknowledgeLabel);
     expect(tick, findsOneWidget);
     expect(_hittable(tester, tick), isTrue);
-    expect(_agree(tester).every((button) => button.onPressed == null), isTrue);
+    expect(find.byType(NekoConsentBar), findsWidgets);
+    final agree = find.text(l10n.agree).hitTestable();
 
-    await tester.tap(tick);
-    await tester.pump();
-    expect(_agree(tester).any((button) => button.onPressed != null), isTrue);
-    await tester.tap(find.text(l10n.agree));
+    await tester.tap(agree.first, warnIfMissed: false);
     await tester.pumpAndSettle();
+    expect(answered, isFalse, reason: '«Agree» before the tick');
+    await tester.tap(tick);
+    await tester.pumpAndSettle();
+    await tester.tap(agree.first);
+    await tester.pumpAndSettle();
+    expect(answered, isTrue);
     expect(find.text(l10n.disclaimerAcknowledgeTitle), findsNothing);
     expect(find.byType(TextField), findsNothing);
     expect(await agreed, isTrue);
