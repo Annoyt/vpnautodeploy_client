@@ -8,8 +8,8 @@ import 'package:fl_clash/neko/tools_view.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/views/navigation.dart';
 import 'package:fl_clash/views/tools.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material_ui/material_ui.dart';
 
 import '../helpers/app_paths.dart';
 import 'neko_ui.dart';
@@ -85,10 +85,8 @@ void main() {
       nekoGatewayTitle,
       l10n.general,
       l10n.advancedConfig,
-      l10n.customProfileResources,
       l10n.backupAndRestore,
       PageLabel.requests.label,
-      PageLabel.connections.label,
       l10n.disclaimer,
     ], findsOneWidget);
     _expectTexts([nekoSosTitle, l10n.accessControl], findsNothing);

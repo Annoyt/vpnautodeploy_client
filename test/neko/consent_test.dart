@@ -4,11 +4,13 @@ import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/neko/consent.dart';
 import 'package:fl_clash/providers/app.dart';
 import 'package:fl_clash/state.dart';
+import 'package:fl_clash/ui/ui.dart';
 import 'package:fl_clash/views/disclaimer.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material_ui/material_ui.dart';
 
+import '../helpers/host_scaffold.dart';
 import '../helpers/test_app.dart';
 import 'neko_ui.dart';
 
@@ -27,7 +29,7 @@ Future<void> _pumpPhone(WidgetTester tester, [Size size = _phone]) async {
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: const TestApp(child: Scaffold(body: SizedBox.shrink())),
+      child: const TestApp(child: HostScaffold(body: SizedBox.shrink())),
     ),
   );
   await tester.pump();

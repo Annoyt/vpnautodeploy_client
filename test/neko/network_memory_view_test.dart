@@ -4,9 +4,10 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fl_clash/neko/brand.dart';
 import 'package:fl_clash/neko/network_memory_manager.dart';
 import 'package:fl_clash/providers/providers.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material_ui/material_ui.dart';
 
+import '../helpers/host_scaffold.dart';
 import '../helpers/test_app.dart';
 
 void main() {
@@ -14,7 +15,7 @@ void main() {
     final written = <bool>[];
     await tester.pumpWidget(
       TestApp(
-        child: Scaffold(
+        child: HostScaffold(
           body: NekoNetworkMemoryItem(
             read: () async => true,
             write: (enabled) async => written.add(enabled),

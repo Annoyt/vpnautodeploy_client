@@ -1,6 +1,6 @@
 import 'package:fl_clash/common/common.dart';
 import 'package:fl_clash/ui/ui.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/widgets.dart';
 
 /// First-run consent on NekoVPN's layout: the tick stays in view above the
 /// buttons and unlocks «Согласен». In upstream's dialog it scrolled under the

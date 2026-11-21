@@ -1,10 +1,11 @@
 import 'package:fl_clash/neko/brand.dart';
 import 'package:fl_clash/neko/netstat_view.dart';
-import 'package:fl_clash/ui/switch.dart';
+import 'package:fl_clash/ui/ui.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material_ui/material_ui.dart';
 
+import '../helpers/host_scaffold.dart';
 import '../helpers/test_app.dart';
 
 const _channel = MethodChannel('com.follow.clash/neko_netstat');
@@ -41,12 +42,12 @@ class _Switch {
 }
 
 Future<void> _pump(WidgetTester tester, Widget item) async {
-  await tester.pumpWidget(TestApp(child: Scaffold(body: item)));
+  await tester.pumpWidget(TestApp(child: HostScaffold(body: item)));
   await tester.pumpAndSettle();
 }
 
 bool _on(WidgetTester tester) {
-  return tester.widget<CommonSwitch>(find.byType(CommonSwitch)).value;
+  return tester.widget<Switch>(find.byType(Switch)).value;
 }
 
 Future<void> _toggle(WidgetTester tester) async {

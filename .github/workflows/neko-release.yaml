@@ -154,12 +154,24 @@ jobs:
       - name: Build
         env:
           ANDROID_NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
-        run: dart setup.dart android -v
+        run: dart tool/package.dart android -v
 
       - name: Collect and check the APKs
         run: |
           mkdir -p release
-          find dist -type f -name '*.apk' -exec cp {} release/ \;
+          for apk in dist/*-android-*.apk; do
+            name="$(basename "$apk" .apk)"
+            arch="${name##*-android-}"
+            version="${name%-android-*}"
+            version="${version#*-*-}"
+            case "$arch" in
+              arm64) abi=arm64-v8a ;;
+              armv7) abi=armeabi-v7a ;;
+              amd64) abi=x86_64 ;;
+              *) echo "$apk: no ABI for $arch" >&2; exit 1 ;;
+            esac
+            cp "$apk" "release/NekoVPN-$version-android-$abi.apk"
+          done
           ls -la release
           count="$(find release -name '*.apk' | wc -l)"
           [ "$count" -eq 3 ] || { echo "expected 3 APKs (one per ABI), got $count" >&2; exit 1; }

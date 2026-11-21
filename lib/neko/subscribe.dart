@@ -6,8 +6,8 @@ import 'package:fl_clash/ui/icons/icons.dart';
 import 'package:fl_clash/ui/ui.dart';
 import 'package:fl_clash/views/profiles/add.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_ui/material_ui.dart';
 
 import 'brand.dart';
 import 'links.dart';
@@ -56,7 +56,7 @@ class NekoNeedSubscriptionSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final mail = ref.watch(nekoMailProvider).value;
     final appLocalizations = context.appLocalizations;
-    return CommonScaffold(
+    return Scaffold(
       title: nekoNeedSubscription,
       body: ListView(
         shrinkWrap: true,
@@ -72,21 +72,21 @@ class NekoNeedSubscriptionSheet extends ConsumerWidget {
                 .copyWith(color: context.colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 16),
-          CommonPopupBox(
+          PopupAnchor(
             targetBuilder: (open) => TonalButton(
               size: TonalButtonSize.bar,
               glyph: AppGlyphs.addCircle,
               label: nekoAddSubscription,
               onPressed: open,
             ),
-            popupBuilder: (_) => CommonPopupMenu(
+            popupBuilder: (_) => PopupMenu(
               items: [
-                CommonPopupMenuItem(
+                PopupMenuItem(
                   glyph: AppGlyphs.cloudDownload,
                   label: appLocalizations.link,
                   onPressed: () => AddProfileMenu.addByLink(context, ref),
                 ),
-                CommonPopupMenuItem(
+                PopupMenuItem(
                   glyph: AppGlyphs.qrCode,
                   label: appLocalizations.qrcode,
                   onPressed: () => AddProfileMenu.scan(context, ref),

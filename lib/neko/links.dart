@@ -23,7 +23,7 @@ Future<void> nekoOpen(WidgetRef ref, Uri uri) async {
   }
   if (!opened) {
     final target = uri.scheme == 'mailto' ? uri.path : uri.toString();
-    dialogs.showNotifier(nekoCannotOpen(target));
+    dialogs.showBanner(nekoCannotOpen(target));
   }
 }
 
