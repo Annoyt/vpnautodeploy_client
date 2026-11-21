@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/host_scaffold.dart';
 import '../helpers/test_app.dart';
 
 const _channel = MethodChannel('com.follow.clash/neko_netstat');
@@ -41,7 +42,7 @@ class _Switch {
 }
 
 Future<void> _pump(WidgetTester tester, Widget item) async {
-  await tester.pumpWidget(TestApp(child: Scaffold(body: item)));
+  await tester.pumpWidget(TestApp(child: HostScaffold(body: item)));
   await tester.pumpAndSettle();
 }
 

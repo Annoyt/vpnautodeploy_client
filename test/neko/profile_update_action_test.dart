@@ -80,7 +80,7 @@ void main() {
     arrived = null;
     held = null;
     core = _MockCore();
-    when(() => core.validateConfig(any())).thenAnswer((_) async => '');
+    when(() => core.validateConfig(any())).thenAnswer((_) async => null);
     when(() => core.clearEffect(any())).thenAnswer((_) async => '');
     setupAction = _RecordingSetupAction();
   });

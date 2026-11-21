@@ -3,10 +3,10 @@ import 'package:fl_clash/neko/brand.dart';
 import 'package:fl_clash/neko/quota.dart';
 import 'package:fl_clash/neko/quota_view.dart';
 import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/ui/ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/host_scaffold.dart';
 import '../helpers/test_app.dart';
 
 const _gb = 1024 * 1024 * 1024;
@@ -23,7 +23,7 @@ Future<int> _pump(WidgetTester tester, NekoQuota quota) async {
   await tester.pumpWidget(
     TestApp(
       wrapInProviderScope: true,
-      child: Scaffold(
+      child: HostScaffold(
         body: SingleChildScrollView(
           child: NekoQuotaCard(quota: quota, now: _now, onBuy: () => bought++),
         ),
@@ -137,7 +137,7 @@ void main() {
         TestApp(
           wrapInProviderScope: true,
           overrides: [currentProfileProvider.overrideWithValue(profile)],
-          child: Scaffold(
+          child: HostScaffold(
             body: SingleChildScrollView(
               child: NekoQuotaBanner(gap: 8, plan: (_) async => plan),
             ),

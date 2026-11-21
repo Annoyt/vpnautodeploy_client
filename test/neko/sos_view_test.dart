@@ -5,12 +5,12 @@ import 'package:fl_clash/neko/sos.dart';
 import 'package:fl_clash/neko/sos_view.dart';
 import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
-import 'package:fl_clash/ui/ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../helpers/host_scaffold.dart';
 import '../helpers/test_app.dart';
 import '../helpers/test_profiles.dart';
 import 'neko_ui.dart';
@@ -156,7 +156,7 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: _container(tester, const []),
-        child: const TestApp(child: Scaffold(body: NekoSosItem())),
+        child: const TestApp(child: HostScaffold(body: NekoSosItem())),
       ),
     );
     expect(find.text(nekoSosTitle), findsOneWidget);

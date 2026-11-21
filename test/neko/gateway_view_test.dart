@@ -5,6 +5,7 @@ import 'package:fl_clash/ui/ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/host_scaffold.dart';
 import '../helpers/test_app.dart';
 
 const _share = NekoGatewayShare(port: 7891, username: 'u', password: 'p');
@@ -113,7 +114,7 @@ void main() {
     await tester.pumpWidget(
       const TestApp(
         wrapInProviderScope: true,
-        child: Scaffold(body: NekoGatewayItem()),
+        child: HostScaffold(body: NekoGatewayItem()),
       ),
     );
     await tester.pumpAndSettle();
