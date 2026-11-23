@@ -25,6 +25,7 @@ internal class ServiceModules(private val service: Service) {
             NotificationModule(service, nextScope),
             // NekoVPN (E37): Wi-Fi and mobile data at once; off by default.
             NekoNetworksModule(service, nextScope),
+            MemoryPressureModule(service, nextScope),
         )
         val startedModules = mutableListOf<ServiceModule>()
 

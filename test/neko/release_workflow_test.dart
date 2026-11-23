@@ -9,6 +9,7 @@ import 'package:yaml/yaml.dart';
 const _upstreamBuildSteps = [
   'Setup rust',
   'Checkout',
+  "Apply the tag's version",
   'Setup Android Signing',
   'Setup Go',
   'Setup Gradle',
@@ -17,7 +18,6 @@ const _upstreamBuildSteps = [
   'Setup Xcode',
   'Setup NDK',
   'Get Flutter Dependency',
-  'Disable Impeller on Intel macOS',
   'Fetch CA certificates',
   'Setup',
   'Upload',

@@ -7,7 +7,7 @@ import 'package:fl_clash/providers/providers.dart';
 import 'package:fl_clash/state.dart';
 import 'package:fl_clash/ui/icons/icons.dart';
 import 'package:fl_clash/ui/ui.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AboutView extends ConsumerWidget {
@@ -48,7 +48,7 @@ class AboutView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final appLocalizations = context.appLocalizations;
     final isLoading = ref.watch(loadingProvider(LoadingTag.checkUpdate));
-    return CommonScaffold(
+    return Scaffold(
       isLoading: isLoading,
       title: appLocalizations.about,
       body: ListView(
@@ -66,9 +66,9 @@ class AboutView extends ConsumerWidget {
               ref
                   .read(appSettingProvider.notifier)
                   .update((state) => state.copyWith(developerMode: true));
-              context.showNotifier(
+              dialogs.showBanner(
                 appLocalizations.developerModeEnableTip,
-                level: MessageLevel.success,
+                level: BannerLevel.success,
               );
             },
           ),

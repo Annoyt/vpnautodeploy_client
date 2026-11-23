@@ -7,8 +7,8 @@ import 'package:fl_clash/ui/icons/icons.dart';
 import 'package:fl_clash/views/about.dart';
 import 'package:fl_clash/views/access.dart';
 import 'package:fl_clash/widgets/widgets.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_ui/material_ui.dart';
 
 import 'brand.dart';
 import 'gateway_view.dart';

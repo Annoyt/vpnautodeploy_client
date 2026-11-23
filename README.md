@@ -33,7 +33,7 @@ the FlClash authors.*
 - Лицензия — **GPL-3.0**, как у апстрима ([LICENSE](LICENSE)). Исходники каждой
   выпущенной сборки — тег в этом репозитории.
 - История апстрима сохранена; его README — [README.upstream.md](README.upstream.md),
-  сборка устроена так же (`dart setup.dart <платформа>`).
+  сборка устроена так же (`dart tool/package.dart <платформа>`).
 - Наш релизный конвейер — `.github/workflows/neko-release.yaml`; проверки
   апстрима (`build.yaml`) работают как есть.
 - План клиента, контракт с сервером и задачи — [docs/PLAN.md](docs/PLAN.md).

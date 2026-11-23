@@ -1,8 +1,8 @@
 import 'package:fl_clash/neko/brand.dart';
 import 'package:fl_clash/neko/multipath.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material_ui/material_ui.dart';
 
+import '../helpers/host_scaffold.dart';
 import '../helpers/test_app.dart';
 
 void main() {
@@ -12,7 +12,7 @@ void main() {
     final written = <NekoMultipathMode>[];
     await tester.pumpWidget(
       TestApp(
-        child: Scaffold(
+        child: HostScaffold(
           body: NekoMultipathItem(
             read: () async => NekoMultipathMode.failover,
             write: (mode) async => written.add(mode),

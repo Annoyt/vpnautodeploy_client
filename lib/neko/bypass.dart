@@ -89,8 +89,8 @@ NekoBypassState nekoBypassSaved(
   required Set<String> visible,
 }) {
   if (access.mode != AccessControlMode.rejectSelected) return state;
-  // The screen saves only the apps it shows, so an app missing from the
-  // saved list was taken back only if it was on the screen.
+  // Only an app on the screen can be unticked: one a filter hides stays in
+  // the saved list, so it is never counted as taken back.
   final excluded = access.rejectList.toSet();
   final ours = {...state.listed, ...state.added, ...state.kept};
   final takenBack = ours.intersection(visible).difference(excluded);

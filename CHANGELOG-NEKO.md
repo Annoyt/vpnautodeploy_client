@@ -9,6 +9,50 @@
 публикации. Пишем их понятным языком; технические подробности — в
 подразделе «Для разработчиков», он в «Что нового» не попадает.
 
+## 0.9.4-neko.1 — 2026-11-21
+
+На основе апстрима FlClash v0.9.4 (было v0.9.2).
+
+- **Обновление в самом приложении.** Новая версия NekoVPN скачивается и
+  ставится прямо из приложения, без браузера. Перед установкой приложение
+  сверяет файл с контрольной суммой выпуска. В первый раз Android спросит,
+  можно ли NekoVPN устанавливать приложения.
+- **Связь после смены сети.** При переходе между Wi-Fi и мобильной сетью
+  Hysteria2 и другие протоколы на UDP переподключаются сами.
+- **Автовыбор сервера** быстрее уходит с сервера, который перестал отвечать.
+- **«Приложения без VPN»** больше не теряют выбранные приложения, которые
+  скрыл фильтр.
+- **Новый вид FlClash 0.9.4:** плавнее переходы и нажатия. В расширенном
+  режиме на главной одна кнопка состояния вместо нескольких значков.
+
+### Для разработчиков
+
+Слияние апстрима v0.9.4 вместе с v0.9.3:
+
+- **Интерфейс.** `material_ui` заменён на `prism_ui` (подмодуль `plugins/prism_ui`). Наши экраны собраны на `flutter/widgets` и `fl_clash/ui/ui.dart`:
+  - `CommonScaffold` → `Scaffold`, `CommonSwitch` → `Switch`;
+  - `showNotifier` → `dialogs.showBanner`, `CommonPopup*` → `PopupAnchor` и `PopupMenu`;
+  - кнопка подключения — на `PressSurface`.
+- **Сборка.** `dart tool/package.dart android` вместо `setup.dart`. `neko-release.yaml` переименовывает APK в `NekoVPN-<версия>-android-<abi>.apk`: эти имена читают бот, сайт и обновление в приложении.
+- **Обновление в приложении** качает наши файлы и сверяет их с `SHA256SUMS` (`nekoUpdateAssetName` в `lib/neko/update.dart`). Без файла для этой сборки открывает страницу нашего выпуска, а не `/releases/latest`: там нет тестовых сборок.
+- **Сокеты.** Хук сокетов ядра переехал в `init()`; привязка E37 к сетям — там же.
+- **Зависимости.** `connectivity_plus` теперь наша зависимость: апстрим её убрал.
+- **Issue.** `issue-gate.yaml` работает только в chen08209/FlClash, за этим следит `upstream_isolation_test`.
+
+### Изменённые файлы апстрима
+
+`.github/workflows/issue-gate.yaml` (только в репозитории FlClash),
+`android/app/src/main/AndroidManifest.xml` (разрешения геолокации теперь
+объявляет апстрим), `core/lib.go` (привязка сокетов в новом хуке),
+`lib/common/app_update.dart` (имена наших файлов обновления),
+`lib/providers/actions/common.dart` (страница нашего выпуска),
+`lib/views/access.dart` (учёт возвращённых в VPN приложений),
+`lib/views/dashboard/dashboard.dart`, `lib/views/tools.dart` (наш вид на
+новых виджетах), `pubspec.yaml`, `pubspec.lock` (`connectivity_plus`,
+`cryptography`, `mobile_scanner` с zxing-cpp), `README.md`,
+`test/common/app_update_test.dart`, `test/widgets/update_dialog_test.dart`
+(имена наших файлов), `test/common/link_test.dart` (схема `nekovpn`).
+
 ## 0.9.2-neko.6 — 2026-11-21
 
 На основе апстрима FlClash v0.9.2, как и предыдущая.
